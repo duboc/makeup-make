@@ -1,0 +1,290 @@
+{
+  "matches": [
+    {
+      "delta_e": 4.11,
+      "foundation": {
+        "L": 55.0,
+        "a": 12.5,
+        "b": 19.5,
+        "brand": "MAC",
+        "coverage": "Light to Medium",
+        "description": "Light medium with cool undertones",
+        "finish": "Natural",
+        "hex": "#D2B19A",
+        "product_line": "Face and Body Foundation",
+        "shade": "C6",
+        "undertone": "Cool"
+      },
+      "match_class": "fair",
+      "match_quality": "Fair match - clearly noticeable difference",
+      "match_score": 79.4,
+      "rank": 1,
+      "swatch_b64": "iVBORw0KGgoAAAANSUhEUgAAAGQAAAAyCAIAAAAlV+npAAAAhElEQVR4nO3QMQHAIBDAQKhUbCAHo7Xw2e/mTNnvnsXMN+wwqzErMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMGvN/ehMAeTptcEEAAAAAElFTkSuQmCC",
+      "tone_category": "Light Medium"
+    },
+    {
+      "delta_e": 4.37,
+      "foundation": {
+        "L": 56.5,
+        "a": 13.3,
+        "b": 20.3,
+        "brand": "MAC",
+        "coverage": "Full",
+        "description": "Light medium with pink undertones",
+        "finish": "Matte",
+        "hex": "#D0AE93",
+        "product_line": "Studio Fix Fluid SPF 15",
+        "shade": "NW38",
+        "undertone": "Cool"
+      },
+      "match_class": "fair",
+      "match_quality": "Fair match - clearly noticeable difference",
+      "match_score": 78.1,
+      "rank": 2,
+      "swatch_b64": "iVBORw0KGgoAAAANSUhEUgAAAGQAAAAyCAIAAAAlV+npAAAAhElEQVR4nO3QMQHAIBDAQKhWdOAHl7Xw2e/mTNnvnsXMN+wwqzErMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMGvN/W8VAe84v/AYAAAAAElFTkSuQmCC",
+      "tone_category": "Light Medium"
+    },
+    {
+      "delta_e": 4.38,
+      "foundation": {
+        "L": 57.0,
+        "a": 12.0,
+        "b": 19.5,
+        "brand": "MAC",
+        "coverage": "Light to Medium",
+        "description": "Light to medium with cool undertones",
+        "finish": "Natural",
+        "hex": "#D6B7A1",
+        "product_line": "Face and Body Foundation",
+        "shade": "C5",
+        "undertone": "Cool"
+      },
+      "match_class": "fair",
+      "match_quality": "Fair match - clearly noticeable difference",
+      "match_score": 78.1,
+      "rank": 3,
+      "swatch_b64": "iVBORw0KGgoAAAANSUhEUgAAAGQAAAAyCAIAAAAlV+npAAAAhElEQVR4nO3QMQHAIBDAQKhZbCAHmbXw2e/mTNnvnsXMN+wwqzErMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMGvN/VpAAfMaiU4uAAAAAElFTkSuQmCC",
+      "tone_category": "Light Medium"
+    },
+    {
+      "delta_e": 4.38,
+      "foundation": {
+        "L": 57.0,
+        "a": 12.0,
+        "b": 19.5,
+        "brand": "MAC",
+        "coverage": "Light",
+        "description": "Light to medium with cool undertones",
+        "finish": "Radiant",
+        "hex": "#D6B7A1",
+        "product_line": "Studio Radiance Face and Body Radiant Sheer Foundation",
+        "shade": "C5",
+        "undertone": "Cool"
+      },
+      "match_class": "fair",
+      "match_quality": "Fair match - clearly noticeable difference",
+      "match_score": 78.1,
+      "rank": 4,
+      "swatch_b64": "iVBORw0KGgoAAAANSUhEUgAAAGQAAAAyCAIAAAAlV+npAAAAhElEQVR4nO3QMQHAIBDAQKhZbCAHmbXw2e/mTNnvnsXMN+wwqzErMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMGvN/VpAAfMaiU4uAAAAAElFTkSuQmCC",
+      "tone_category": "Light Medium"
+    },
+    {
+      "delta_e": 4.47,
+      "foundation": {
+        "L": 58.2,
+        "a": 12.6,
+        "b": 19.6,
+        "brand": "MAC",
+        "coverage": "Full",
+        "description": "Light medium with pink undertones",
+        "finish": "Matte",
+        "hex": "#D4B49A",
+        "product_line": "Studio Fix Fluid SPF 15",
+        "shade": "NW35",
+        "undertone": "Cool"
+      },
+      "match_class": "fair",
+      "match_quality": "Fair match - clearly noticeable difference",
+      "match_score": 77.6,
+      "rank": 5,
+      "swatch_b64": "iVBORw0KGgoAAAANSUhEUgAAAGQAAAAyCAIAAAAlV+npAAAAhElEQVR4nO3QMQHAIBDAQKhcbGAHkbXw2e/mTNnvnsXMN+wwqzErMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMGvN/aYvAf3t2xLmAAAAAElFTkSuQmCC",
+      "tone_category": "Light"
+    },
+    {
+      "delta_e": 4.47,
+      "foundation": {
+        "L": 58.2,
+        "a": 12.6,
+        "b": 19.6,
+        "brand": "MAC",
+        "coverage": "Full",
+        "description": "Light medium with pink undertones",
+        "finish": "Natural Matte",
+        "hex": "#D4B49A",
+        "product_line": "Pro Longwear Nourishing Waterproof Foundation",
+        "shade": "NW35",
+        "undertone": "Cool"
+      },
+      "match_class": "fair",
+      "match_quality": "Fair match - clearly noticeable difference",
+      "match_score": 77.6,
+      "rank": 6,
+      "swatch_b64": "iVBORw0KGgoAAAANSUhEUgAAAGQAAAAyCAIAAAAlV+npAAAAhElEQVR4nO3QMQHAIBDAQKhcbGAHkbXw2e/mTNnvnsXMN+wwqzErMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMGvN/aYvAf3t2xLmAAAAAElFTkSuQmCC",
+      "tone_category": "Light"
+    },
+    {
+      "delta_e": 4.47,
+      "foundation": {
+        "L": 58.2,
+        "a": 12.6,
+        "b": 19.6,
+        "brand": "MAC",
+        "coverage": "Medium",
+        "description": "Light medium with pink undertones",
+        "finish": "Natural Matte",
+        "hex": "#D4B49A",
+        "product_line": "Lightful C\u00b3 Natural Silk Powder Foundation",
+        "shade": "NW35",
+        "undertone": "Cool"
+      },
+      "match_class": "fair",
+      "match_quality": "Fair match - clearly noticeable difference",
+      "match_score": 77.6,
+      "rank": 7,
+      "swatch_b64": "iVBORw0KGgoAAAANSUhEUgAAAGQAAAAyCAIAAAAlV+npAAAAhElEQVR4nO3QMQHAIBDAQKhcbGAHkbXw2e/mTNnvnsXMN+wwqzErMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMGvN/aYvAf3t2xLmAAAAAElFTkSuQmCC",
+      "tone_category": "Light"
+    },
+    {
+      "delta_e": 4.7,
+      "foundation": {
+        "L": 54.8,
+        "a": 14.0,
+        "b": 21.0,
+        "brand": "MAC",
+        "coverage": "Full",
+        "description": "Light medium with pink undertones",
+        "finish": "Matte",
+        "hex": "#CCA88D",
+        "product_line": "Studio Fix Fluid SPF 15",
+        "shade": "NW40",
+        "undertone": "Cool"
+      },
+      "match_class": "fair",
+      "match_quality": "Fair match - clearly noticeable difference",
+      "match_score": 76.5,
+      "rank": 8,
+      "swatch_b64": "iVBORw0KGgoAAAANSUhEUgAAAGQAAAAyCAIAAAAlV+npAAAAhElEQVR4nO3QMQHAIBDAQKhRdGAInbXw2e/mTNnvnsXMN+wwqzErMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMGvN/XLCAeL96nfwAAAAAElFTkSuQmCC",
+      "tone_category": "Light Medium"
+    },
+    {
+      "delta_e": 4.7,
+      "foundation": {
+        "L": 54.8,
+        "a": 14.0,
+        "b": 21.0,
+        "brand": "MAC",
+        "coverage": "Full",
+        "description": "Light medium with pink undertones",
+        "finish": "Natural Matte",
+        "hex": "#CCA88D",
+        "product_line": "Pro Longwear Nourishing Waterproof Foundation",
+        "shade": "NW40",
+        "undertone": "Cool"
+      },
+      "match_class": "fair",
+      "match_quality": "Fair match - clearly noticeable difference",
+      "match_score": 76.5,
+      "rank": 9,
+      "swatch_b64": "iVBORw0KGgoAAAANSUhEUgAAAGQAAAAyCAIAAAAlV+npAAAAhElEQVR4nO3QMQHAIBDAQKhRdGAInbXw2e/mTNnvnsXMN+wwqzErMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMGvN/XLCAeL96nfwAAAAAElFTkSuQmCC",
+      "tone_category": "Light Medium"
+    },
+    {
+      "delta_e": 4.7,
+      "foundation": {
+        "L": 54.8,
+        "a": 14.0,
+        "b": 21.0,
+        "brand": "MAC",
+        "coverage": "Medium",
+        "description": "Light medium with pink undertones",
+        "finish": "Natural Matte",
+        "hex": "#CCA88D",
+        "product_line": "Lightful C\u00b3 Natural Silk Powder Foundation",
+        "shade": "NW40",
+        "undertone": "Cool"
+      },
+      "match_class": "fair",
+      "match_quality": "Fair match - clearly noticeable difference",
+      "match_score": 76.5,
+      "rank": 10,
+      "swatch_b64": "iVBORw0KGgoAAAANSUhEUgAAAGQAAAAyCAIAAAAlV+npAAAAhElEQVR4nO3QMQHAIBDAQKhRdGAInbXw2e/mTNnvnsXMN+wwqzErMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMGvN/XLCAeL96nfwAAAAAElFTkSuQmCC",
+      "tone_category": "Light Medium"
+    },
+    {
+      "delta_e": 4.8,
+      "foundation": {
+        "L": 53.0,
+        "a": 13.5,
+        "b": 20.5,
+        "brand": "MAC",
+        "coverage": "Light to Medium",
+        "description": "Medium with cool undertones",
+        "finish": "Natural",
+        "hex": "#CEAB93",
+        "product_line": "Face and Body Foundation",
+        "shade": "C7",
+        "undertone": "Cool"
+      },
+      "match_class": "fair",
+      "match_quality": "Fair match - clearly noticeable difference",
+      "match_score": 76.0,
+      "rank": 11,
+      "swatch_b64": "iVBORw0KGgoAAAANSUhEUgAAAGQAAAAyCAIAAAAlV+npAAAAhElEQVR4nO3QMQHAIBDAQKhObOAHqbXw2e/mTNnvnsXMN+wwqzErMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMGvN/XZqAdWmhK2nAAAAAElFTkSuQmCC",
+      "tone_category": "Light Medium"
+    },
+    {
+      "delta_e": 4.92,
+      "foundation": {
+        "L": 59.8,
+        "a": 11.9,
+        "b": 18.9,
+        "brand": "MAC",
+        "coverage": "Full",
+        "description": "Light to medium with pink undertones",
+        "finish": "Matte",
+        "hex": "#D8B9A0",
+        "product_line": "Studio Fix Fluid SPF 15",
+        "shade": "NW33",
+        "undertone": "Cool"
+      },
+      "match_class": "fair",
+      "match_quality": "Fair match - clearly noticeable difference",
+      "match_score": 75.4,
+      "rank": 12,
+      "swatch_b64": "iVBORw0KGgoAAAANSUhEUgAAAGQAAAAyCAIAAAAlV+npAAAAhElEQVR4nO3QMQHAIBDAQKhhZCAHi7Xw2e/mTNnvnsXMN+wwqzErMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMGvN/We6AglNX+HcAAAAAElFTkSuQmCC",
+      "tone_category": "Light"
+    }
+  ],
+  "skin_color_lab": [
+    55.68141635695625,
+    15.572120802581136,
+    14.53776767525663
+  ],
+  "skin_pixel_count": 130513,
+  "skin_stats": {
+    "color_uniformity": 0.0
+  },
+  "skin_swatch_b64": "iVBORw0KGgoAAAANSUhEUgAAAGQAAAAyCAIAAAAlV+npAAAAhElEQVR4nO3QMQHAIBDAQKhfFGAImbXw2e/mTNnvnsXMN+wwqzErMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMGvN/ZUCAfQRrKaUAAAAAElFTkSuQmCC",
+  "success": true,
+  "undertone": {
+    "analysis": {
+      "a_value": 15.57,
+      "b_value": 14.54,
+      "coolness_indicator": 1.0,
+      "warmth_indicator": 0.88
+    },
+    "confidence": 71.93106097952223,
+    "primary": "Neutral",
+    "secondary": null
+  }
+}

@@ -1,0 +1,12 @@
+Flask==2.3.3
+opencv-python-headless==4.8.1.78
+numpy==1.24.3
+pandas==2.0.3
+scikit-learn==1.3.0
+Pillow==10.0.1
+matplotlib==3.7.2
+Werkzeug==2.3.7
+scipy==1.11.1
+colour-science==0.4.2
+colorspacious==1.1.2
+gunicorn==21.2.0

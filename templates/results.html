@@ -1,0 +1,462 @@
+{% extends "base.html" %}
+
+{% block title %}Your MAC Foundation Matches - MAC Foundation Color Matcher{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-5 fw-bold mb-3">
+                    <i class="fas fa-award me-3"></i>
+                    Your Foundation Recommendations
+                </h1>
+                <p class="lead mb-0">
+                    Based on your skin color analysis, here are the best foundation matches ranked by compatibility.
+                </p>
+            </div>
+            <div class="col-lg-4 text-center">
+                <a href="/" class="btn btn-outline-light btn-lg">
+                    <i class="fas fa-camera me-2"></i>
+                    Analyze New Photo
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Main Content -->
+<div class="container results-container">
+    {% if results %}
+    <!-- Skin Color Summary -->
+    <div class="row mb-5">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-header bg-white border-0">
+                    <h4 class="card-title mb-0">
+                        <i class="fas fa-palette me-2 text-primary"></i>
+                        Your Skin Color Analysis
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-3 text-center">
+                            <img src="data:image/png;base64,{{ results.skin_swatch_b64 }}" 
+                                 class="color-swatch mb-3" width="120" height="80">
+                            <h6>Your Skin Color</h6>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <div class="metric-card">
+                                        <div class="metric-value">{{ "%.1f"|format(results.skin_color_lab[0]) }}</div>
+                                        <div class="metric-label">L* Lightness</div>
+                                        <small class="text-muted">0-100 scale</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="metric-card">
+                                        <div class="metric-value">{{ "%.1f"|format(results.skin_color_lab[1]) }}</div>
+                                        <div class="metric-label">a* Green-Red</div>
+                                        <small class="text-muted">-127 to +127</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="metric-card">
+                                        <div class="metric-value">{{ "%.1f"|format(results.skin_color_lab[2]) }}</div>
+                                        <div class="metric-label">b* Blue-Yellow</div>
+                                        <small class="text-muted">-127 to +127</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-3">
+                                <div class="d-flex align-items-center text-success">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    <span>{{ "{:,}".format(results.skin_pixel_count) }} skin pixels detected</span>
+                                </div>
+                                <small class="text-muted">
+                                    High pixel count indicates reliable color analysis
+                                </small>
+                            </div>
+                            
+                            <!-- Undertone Information -->
+                            {% if results.undertone %}
+                            <div class="mt-4">
+                                <h5>Skin Undertone Analysis</h5>
+                                <div class="alert alert-info">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h6 class="mb-2">Detected Undertone</h6>
+                                            <p class="mb-0">
+                                                <strong>{{ results.undertone.primary }}</strong>
+                                                {% if results.undertone.secondary %}
+                                                    with {{ results.undertone.secondary }} hints
+                                                {% endif %}
+                                            </p>
+                                            <small class="text-muted">{{ results.undertone.confidence|round|int }}% confidence</small>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h6 class="mb-2">What this means</h6>
+                                            <p class="mb-0 small">
+                                                {% if results.undertone.primary == 'Cool' %}
+                                                    Your skin has pink, red, or blue undertones. Look for foundations with cool or pink undertones.
+                                                {% elif results.undertone.primary == 'Warm' %}
+                                                    Your skin has yellow, golden, or peachy undertones. Look for foundations with warm or golden undertones.
+                                                {% else %}
+                                                    Your skin has a balanced mix of warm and cool tones. You can wear both warm and cool foundations.
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            <!-- Skin Quality Metrics -->
+                            {% if results.skin_stats %}
+                            <div class="mt-3">
+                                <h6>Skin Color Uniformity</h6>
+                                <div class="progress" style="height: 20px;">
+                                    <div class="progress-bar bg-success" role="progressbar" 
+                                         style="width: {{ (results.skin_stats.color_uniformity * 100)|round|int }}%">
+                                        {{ (results.skin_stats.color_uniformity * 100)|round|int }}%
+                                    </div>
+                                </div>
+                                <small class="text-muted">Higher uniformity indicates more consistent skin tone</small>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Foundation Recommendations -->
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3>
+                    <i class="fas fa-list me-2 text-primary"></i>
+                    Foundation Matches
+                </h3>
+                <div class="text-muted">
+                    <small>Ranked by Delta E color difference (lower is better)</small>
+                </div>
+            </div>
+            
+            <!-- Match Quality Legend -->
+            <div class="card mb-4">
+                <div class="card-body py-3">
+                    <h6 class="mb-3">Match Quality Guide:</h6>
+                    <div class="row g-2 text-center">
+                        <div class="col-md">
+                            <div class="d-flex align-items-center justify-content-center">
+                                <div class="bg-success rounded me-2" style="width: 12px; height: 12px;"></div>
+                                <small><strong>Excellent:</strong> ΔE &lt; 1</small>
+                            </div>
+                        </div>
+                        <div class="col-md">
+                            <div class="d-flex align-items-center justify-content-center">
+                                <div class="bg-info rounded me-2" style="width: 12px; height: 12px;"></div>
+                                <small><strong>Very Good:</strong> ΔE &lt; 2</small>
+                            </div>
+                        </div>
+                        <div class="col-md">
+                            <div class="d-flex align-items-center justify-content-center">
+                                <div class="bg-warning rounded me-2" style="width: 12px; height: 12px;"></div>
+                                <small><strong>Good:</strong> ΔE &lt; 3</small>
+                            </div>
+                        </div>
+                        <div class="col-md">
+                            <div class="d-flex align-items-center justify-content-center">
+                                <div class="bg-orange rounded me-2" style="width: 12px; height: 12px; background-color: #fd7e14;"></div>
+                                <small><strong>Fair:</strong> ΔE &lt; 5</small>
+                            </div>
+                        </div>
+                        <div class="col-md">
+                            <div class="d-flex align-items-center justify-content-center">
+                                <div class="bg-danger rounded me-2" style="width: 12px; height: 12px;"></div>
+                                <small><strong>Poor:</strong> ΔE ≥ 5</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Foundation Cards -->
+            <div class="row g-4 results-grid">
+                {% for match in results.matches %}
+                <div class="col-lg-6">
+                    <div class="card match-card match-{{ match.match_class }} h-100">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-auto">
+                                    <div class="position-relative">
+                                        <img src="data:image/png;base64,{{ match.swatch_b64 }}" 
+                                             class="color-swatch" width="80" height="60">
+                                        <div class="position-absolute top-0 start-0 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" 
+                                             style="width: 24px; height: 24px; font-size: 12px; font-weight: bold; margin-top: -8px; margin-left: -8px;">
+                                            {{ match.rank }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div>
+                                            <h5 class="mb-1">{{ match.foundation.brand }}</h5>
+                                            <h6 class="text-muted mb-0">Shade {{ match.foundation.shade }}</h6>
+                                        </div>
+                                        <div class="text-end">
+                                            <div class="badge bg-primary fs-6 mb-1">{{ match.match_score }}%</div>
+                                            <div class="small text-muted">Match Score</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row g-2 mb-3">
+                                        <div class="col-4">
+                                            <div class="small">
+                                                <strong>Tone Category:</strong><br>
+                                                <span class="text-muted">{{ match.tone_category }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="small">
+                                                <strong>Undertone:</strong><br>
+                                                <span class="text-muted">{{ match.foundation.undertone }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="small">
+                                                <strong>Color Difference:</strong><br>
+                                                <span class="text-muted">ΔE {{ match.delta_e }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="alert alert-{{ 'success' if match.match_class == 'excellent' else 'info' if match.match_class == 'very-good' else 'warning' if match.match_class == 'good' else 'warning' if match.match_class == 'fair' else 'danger' }} py-2 mb-0">
+                                        <small>
+                                            <i class="fas fa-{{ 'check-circle' if match.match_class in ['excellent', 'very-good'] else 'info-circle' if match.match_class == 'good' else 'exclamation-triangle' if match.match_class == 'fair' else 'times-circle' }} me-1"></i>
+                                            {{ match.match_quality }}
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Information -->
+    <div class="row mt-5">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-lightbulb me-2 text-warning"></i>
+                        Tips for Best Results
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-shopping-cart me-2 text-primary"></i>Before You Buy</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>Test in natural lighting</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Check undertones match your skin</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Consider your skin type (oily, dry, etc.)</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Ask for samples when possible</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-paint-brush me-2 text-primary"></i>Application Tips</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>Use primer for better coverage</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Blend well at jawline</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Build coverage gradually</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Set with powder if needed</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- No Results State -->
+    <div class="row">
+        <div class="col-lg-6 mx-auto text-center">
+            <div class="card">
+                <div class="card-body py-5">
+                    <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                    <h4>No Analysis Results Found</h4>
+                    <p class="text-muted mb-4">
+                        It looks like you haven't analyzed any photos yet. Upload a photo to get your foundation recommendations.
+                    </p>
+                    <a href="/" class="btn btn-primary btn-lg">
+                        <i class="fas fa-camera me-2"></i>
+                        Start Analysis
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Technical Details Section -->
+<section class="py-5 bg-light mt-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h3 class="mb-4">About Our Technology</h3>
+                <p class="lead mb-4">
+                    Our foundation matcher implements cutting-edge research in computer vision and color science.
+                </p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card text-center h-100">
+                    <div class="card-body">
+                        <div class="text-primary mb-3">
+                            <i class="fas fa-microscope fa-2x"></i>
+                        </div>
+                        <h6>RGB-H-CbCr Algorithm</h6>
+                        <p class="text-muted small">
+                            Advanced skin detection using multiple color space criteria for accurate pixel identification.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center h-100">
+                    <div class="card-body">
+                        <div class="text-primary mb-3">
+                            <i class="fas fa-cube fa-2x"></i>
+                        </div>
+                        <h6>LAB Color Space</h6>
+                        <p class="text-muted small">
+                            Perceptually uniform color space that better represents how humans perceive color differences.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center h-100">
+                    <div class="card-body">
+                        <div class="text-primary mb-3">
+                            <i class="fas fa-calculator fa-2x"></i>
+                        </div>
+                        <h6>Delta E Calculation</h6>
+                        <p class="text-muted small">
+                            Industry-standard color difference measurement for precise foundation matching.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Performance Enhancement Scripts -->
+<script src="{{ url_for('static', filename='js/performance.js') }}"></script>
+<script src="{{ url_for('static', filename='js/results-enhancer.js') }}"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize lazy loading for images
+    const lazyLoader = new window.PerformanceUtils.LazyImageLoader();
+    const lazyImages = document.querySelectorAll('.lazy-load');
+    lazyLoader.observe(lazyImages);
+
+    // Initialize results enhancer if we have results
+    {% if results %}
+    if (window.resultsEnhancer) {
+        // Pass the results data to the enhancer
+        window.resultsEnhancer.results = {{ results.matches | tojson | safe }};
+        window.resultsEnhancer.filteredResults = {{ results.matches | tojson | safe }};
+        window.resultsEnhancer.applyFilters();
+    }
+    {% endif %}
+
+    // Add smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+    
+    // Enhanced fade-in animation for cards
+    const cards = document.querySelectorAll('.match-card');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry, index) => {
+            if (entry.isIntersecting) {
+                setTimeout(() => {
+                    entry.target.classList.add('fade-in-up');
+                    observer.unobserve(entry.target);
+                }, index * 50);
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '50px'
+    });
+
+    cards.forEach(card => {
+        observer.observe(card);
+    });
+
+    // Add hover effects with hardware acceleration
+    cards.forEach(card => {
+        card.classList.add('gpu-accelerated');
+    });
+
+    // Preload next/previous images for smooth navigation
+    const swatchImages = document.querySelectorAll('.color-swatch');
+    swatchImages.forEach((img, index) => {
+        if (index < swatchImages.length - 1) {
+            const nextImg = new Image();
+            nextImg.src = swatchImages[index + 1].src;
+        }
+    });
+
+    // Add keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            // Close any open panels
+            const comparisonPanel = document.querySelector('.comparison-panel');
+            if (comparisonPanel && comparisonPanel.style.display !== 'none') {
+                comparisonPanel.style.display = 'none';
+            }
+        }
+    });
+
+    // Performance monitoring (optional - remove in production)
+    if (window.performance && window.performance.navigation.type === 1) {
+        console.log('Page reload detected');
+    }
+
+    // Add reduced motion support
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (prefersReducedMotion.matches) {
+        document.body.classList.add('reduce-motion');
+    }
+});
+</script>
+{% endblock %}

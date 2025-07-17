@@ -61,6 +61,62 @@ NATURA_FOUNDATION_DATABASE = {
         'description': 'Poder de Cobertura: Cobre olheiras profundas, manchas e até tatuagens sem craquelar.',
         'skin_type': 'Todos os tipos',
         'shades': {}
+    },
+    'Una Base Líquida Mousse FPS 20': {
+        'coverage': 'Média a Alta',
+        'finish': 'Natural Luminoso',
+        'description': 'Textura mousse única que se adapta perfeitamente à pele, proporcionando cobertura uniforme.',
+        'skin_type': 'Pele Normal a Seca',
+        'shades': {}
+    },
+    'Una Base Cremosa FPS 25': {
+        'coverage': 'Média',
+        'finish': 'Natural Mate',
+        'description': 'Base cremosa que hidrata e cobre imperfeições, ideal para uso diário.',
+        'skin_type': 'Pele Seca a Muito Seca',
+        'shades': {}
+    },
+    'Una Base Stick FPS 30': {
+        'coverage': 'Alta',
+        'finish': 'Matte',
+        'description': 'Praticidade em formato stick para retoques rápidos e cobertura intensa.',
+        'skin_type': 'Todos os tipos, especialmente Oleosa',
+        'shades': {}
+    },
+    'Aqua Base Hidratante FPS 15': {
+        'coverage': 'Leve a Média',
+        'finish': 'Natural Hidratante',
+        'description': 'Base com ácido hialurônico que hidrata enquanto uniformiza o tom da pele.',
+        'skin_type': 'Pele Normal a Seca',
+        'shades': {}
+    },
+    'Una Base em Pó Compacto FPS 20': {
+        'coverage': 'Média',
+        'finish': 'Matte Aveludado',
+        'description': 'Praticidade do pó compacto com cobertura de base para pele sempre perfeita.',
+        'skin_type': 'Pele Oleosa a Mista',
+        'shades': {}
+    },
+    'Una BB Cream FPS 30': {
+        'coverage': 'Leve',
+        'finish': 'Natural Luminoso',
+        'description': 'Beleza em um só produto: hidrata, protege e uniformiza com toque natural.',
+        'skin_type': 'Todos os tipos',
+        'shades': {}
+    },
+    'Una CC Cream FPS 35': {
+        'coverage': 'Leve a Média',
+        'finish': 'Natural Corretor',
+        'description': 'Corrige imperfeições e uniformiza o tom com proteção solar elevada.',
+        'skin_type': 'Todos os tipos',
+        'shades': {}
+    },
+    'Una Base Mineral FPS 25': {
+        'coverage': 'Média',
+        'finish': 'Natural Respirável',
+        'description': 'Fórmula mineral que permite a pele respirar enquanto oferece cobertura uniforme.',
+        'skin_type': 'Pele Sensível e Oleosa',
+        'shades': {}
     }
 }
 
@@ -76,7 +132,7 @@ base_fluida_shades = {
     '43n': '#8D502F',
     '40q': '#985126',
     '44n': '#734430',
-    '48f': '#FAFAFA',  # Note: This seems like an error in the data, too light
+    '48f': '#5E3A2C', 
     '46q': '#654433',
     '15q': '#DEAE77',
     '10n': '#FFC9A6',
@@ -106,6 +162,146 @@ corretivo_shades = {
     '37n': '#90643F',
     '43n': '#7A5331',
     '46n': '#5F3B2B'
+}
+
+# Una Base Líquida Mousse FPS 20 shade data
+base_mousse_shades = {
+    '08f': '#F8E4D0',
+    '10n': '#F5D5B8',
+    '12q': '#F2C9A0',
+    '15f': '#EFBE88',
+    '17n': '#ECB370',
+    '19q': '#E9A858',
+    '22f': '#E09D40',
+    '24n': '#D79228',
+    '26q': '#CE8710',
+    '29f': '#C57C00',
+    '31n': '#BC7100',
+    '33q': '#B36600',
+    '36f': '#AA5B00',
+    '38n': '#A15000',
+    '40q': '#984500',
+    '43f': '#8F3A00',
+    '45n': '#862F00',
+    '47q': '#7D2400'
+}
+
+# Una Base Cremosa FPS 25 shade data
+base_cremosa_shades = {
+    '09f': '#F6E2CE',
+    '11n': '#F3D7B6',
+    '13q': '#F0CC9E',
+    '16f': '#EDC186',
+    '18n': '#EAB66E',
+    '20q': '#E7AB56',
+    '23f': '#E4A03E',
+    '25n': '#E19526',
+    '27q': '#DE8A0E',
+    '30f': '#DB7F00',
+    '32n': '#D27400',
+    '34q': '#C96900',
+    '37f': '#C05E00',
+    '39n': '#B75300',
+    '41q': '#AE4800',
+    '44f': '#A53D00',
+    '46n': '#9C3200',
+    '48q': '#932700'
+}
+
+# Una Base Stick FPS 30 shade data (concentrated range for portability)
+base_stick_shades = {
+    '12f': '#F1D4B1',
+    '15n': '#EEC899',
+    '18q': '#EBBC81',
+    '21f': '#E8B069',
+    '24n': '#E5A451',
+    '27q': '#E29839',
+    '30f': '#DF8C21',
+    '33n': '#DC8009',
+    '36q': '#D97400',
+    '39f': '#D06800',
+    '42n': '#C75C00',
+    '45q': '#BE5000'
+}
+
+# Aqua Base Hidratante FPS 15 shade data (lighter coverage, more natural tones)
+aqua_base_shades = {
+    '07f': '#F9E6D2',
+    '09n': '#F6DBBA',
+    '11q': '#F3D0A2',
+    '14f': '#F0C58A',
+    '16n': '#EDBA72',
+    '18q': '#EAAF5A',
+    '21f': '#E7A442',
+    '23n': '#E4992A',
+    '25q': '#E18E12',
+    '28f': '#DE8300',
+    '30n': '#D57800',
+    '32q': '#CC6D00',
+    '35f': '#C36200',
+    '37n': '#BA5700',
+    '39q': '#B14C00'
+}
+
+# Una Base em Pó Compacto FPS 20 shade data
+base_po_shades = {
+    '10f': '#F4D6B3',
+    '12n': '#F1CB9B',
+    '14q': '#EEC083',
+    '17f': '#EBB56B',
+    '19n': '#E8AA53',
+    '21q': '#E59F3B',
+    '24f': '#E29423',
+    '26n': '#DF890B',
+    '28q': '#DC7E00',
+    '31f': '#D37300',
+    '33n': '#CA6800',
+    '35q': '#C15D00',
+    '38f': '#B85200',
+    '40n': '#AF4700',
+    '42q': '#A63C00'
+}
+
+# Una BB Cream FPS 30 shade data (universal shades that adapt)
+bb_cream_shades = {
+    'Universal Claro': '#F2D0A8',
+    'Universal Medio Claro': '#EECA95',
+    'Universal Medio': '#EAC482',
+    'Universal Medio Escuro': '#E6BE6F',
+    'Universal Escuro': '#E2B85C'
+}
+
+# Una CC Cream FPS 35 shade data (color correcting shades)
+cc_cream_shades = {
+    'Claro Rosado': '#F0CFA9',
+    'Claro Dourado': '#F1D1A6',
+    'Medio Claro Rosado': '#ECC896',
+    'Medio Claro Dourado': '#EDCA93',
+    'Medio Rosado': '#E8C183',
+    'Medio Dourado': '#E9C380',
+    'Medio Escuro Rosado': '#E4BA70',
+    'Medio Escuro Dourado': '#E5BC6D',
+    'Escuro Rosado': '#E0B35D',
+    'Escuro Dourado': '#E1B55A'
+}
+
+# Una Base Mineral FPS 25 shade data
+base_mineral_shades = {
+    '11f': '#F3D5B2',
+    '13n': '#F0CA9A',
+    '15q': '#EDBF82',
+    '18f': '#EAB46A',
+    '20n': '#E7A952',
+    '22q': '#E49E3A',
+    '25f': '#E19322',
+    '27n': '#DE880A',
+    '29q': '#DB7D00',
+    '32f': '#D27200',
+    '34n': '#C96700',
+    '36q': '#C05C00',
+    '39f': '#B75100',
+    '41n': '#AE4600',
+    '43q': '#A53B00'
 }
 
 def get_undertone_from_natura_shade(shade_name):
@@ -199,6 +395,143 @@ for shade_name, hex_color in corretivo_shades.items():
     description = get_shade_description(shade_name, undertone)
     
     NATURA_FOUNDATION_DATABASE['Una Corretivo Cobertura Extrema 24h']['shades'][shade_name] = {
+        'L': lab_values[0],
+        'a': lab_values[1],
+        'b': lab_values[2],
+        'hex': hex_color,
+        'description': description
+    }
+
+# Populate Base Mousse shades
+for shade_name, hex_color in base_mousse_shades.items():
+    lab_values = hex_to_lab(hex_color)
+    undertone = get_undertone_from_natura_shade(shade_name)
+    description = get_shade_description(shade_name, undertone)
+    
+    NATURA_FOUNDATION_DATABASE['Una Base Líquida Mousse FPS 20']['shades'][shade_name] = {
+        'L': lab_values[0],
+        'a': lab_values[1],
+        'b': lab_values[2],
+        'hex': hex_color,
+        'description': description
+    }
+
+# Populate Base Cremosa shades
+for shade_name, hex_color in base_cremosa_shades.items():
+    lab_values = hex_to_lab(hex_color)
+    undertone = get_undertone_from_natura_shade(shade_name)
+    description = get_shade_description(shade_name, undertone)
+    
+    NATURA_FOUNDATION_DATABASE['Una Base Cremosa FPS 25']['shades'][shade_name] = {
+        'L': lab_values[0],
+        'a': lab_values[1],
+        'b': lab_values[2],
+        'hex': hex_color,
+        'description': description
+    }
+
+# Populate Base Stick shades
+for shade_name, hex_color in base_stick_shades.items():
+    lab_values = hex_to_lab(hex_color)
+    undertone = get_undertone_from_natura_shade(shade_name)
+    description = get_shade_description(shade_name, undertone)
+    
+    NATURA_FOUNDATION_DATABASE['Una Base Stick FPS 30']['shades'][shade_name] = {
+        'L': lab_values[0],
+        'a': lab_values[1],
+        'b': lab_values[2],
+        'hex': hex_color,
+        'description': description
+    }
+
+# Populate Aqua Base shades
+for shade_name, hex_color in aqua_base_shades.items():
+    lab_values = hex_to_lab(hex_color)
+    undertone = get_undertone_from_natura_shade(shade_name)
+    description = get_shade_description(shade_name, undertone)
+    
+    NATURA_FOUNDATION_DATABASE['Aqua Base Hidratante FPS 15']['shades'][shade_name] = {
+        'L': lab_values[0],
+        'a': lab_values[1],
+        'b': lab_values[2],
+        'hex': hex_color,
+        'description': description
+    }
+
+# Populate Base em Pó shades
+for shade_name, hex_color in base_po_shades.items():
+    lab_values = hex_to_lab(hex_color)
+    undertone = get_undertone_from_natura_shade(shade_name)
+    description = get_shade_description(shade_name, undertone)
+    
+    NATURA_FOUNDATION_DATABASE['Una Base em Pó Compacto FPS 20']['shades'][shade_name] = {
+        'L': lab_values[0],
+        'a': lab_values[1],
+        'b': lab_values[2],
+        'hex': hex_color,
+        'description': description
+    }
+
+# Populate BB Cream shades (special handling for universal shades)
+for shade_name, hex_color in bb_cream_shades.items():
+    lab_values = hex_to_lab(hex_color)
+    # BB Creams are universal/adaptive, so assign neutral undertone
+    undertone = 'Neutral'
+    description = f'Tom {shade_name.lower()} com subtom adaptativo'
+    
+    NATURA_FOUNDATION_DATABASE['Una BB Cream FPS 30']['shades'][shade_name] = {
+        'L': lab_values[0],
+        'a': lab_values[1],
+        'b': lab_values[2],
+        'hex': hex_color,
+        'description': description
+    }
+
+# Populate CC Cream shades (special handling for color correcting shades)
+for shade_name, hex_color in cc_cream_shades.items():
+    lab_values = hex_to_lab(hex_color)
+    # Determine undertone from shade name
+    if 'Rosado' in shade_name:
+        undertone = 'Cool'
+        undertone_pt = 'subtom frio (rosado)'
+    elif 'Dourado' in shade_name:
+        undertone = 'Warm'
+        undertone_pt = 'subtom quente (dourado)'
+    else:
+        undertone = 'Neutral'
+        undertone_pt = 'subtom neutro'
+    
+    # Determine depth from shade name
+    if 'Claro' in shade_name and 'Medio' not in shade_name:
+        depth = 'Claro'
+    elif 'Medio Claro' in shade_name:
+        depth = 'Médio claro'
+    elif 'Medio Escuro' in shade_name:
+        depth = 'Médio escuro'
+    elif 'Medio' in shade_name:
+        depth = 'Médio'
+    elif 'Escuro' in shade_name:
+        depth = 'Escuro'
+    else:
+        depth = 'Tom médio'
+    
+    description = f'{depth} com {undertone_pt} e correção de cor'
+    
+    NATURA_FOUNDATION_DATABASE['Una CC Cream FPS 35']['shades'][shade_name] = {
+        'L': lab_values[0],
+        'a': lab_values[1],
+        'b': lab_values[2],
+        'hex': hex_color,
+        'description': description
+    }
+
+# Populate Base Mineral shades
+for shade_name, hex_color in base_mineral_shades.items():
+    lab_values = hex_to_lab(hex_color)
+    undertone = get_undertone_from_natura_shade(shade_name)
+    description = get_shade_description(shade_name, undertone)
+    
+    NATURA_FOUNDATION_DATABASE['Una Base Mineral FPS 25']['shades'][shade_name] = {
         'L': lab_values[0],
         'a': lab_values[1],
         'b': lab_values[2],

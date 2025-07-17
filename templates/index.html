@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}MAC Foundation Color Matcher - Find Your Perfect MAC Shade{% endblock %}
+{% block title %}Natura Foundation Color Matcher - Encontre Seu Tom Perfeito{% endblock %}
 
 {% block content %}
 <!-- Hero Section -->
@@ -10,23 +10,23 @@
             <div class="col-lg-8">
                 <h1 class="display-4 fw-bold mb-4">
                     <i class="fas fa-magic me-3"></i>
-                    Find Your Perfect MAC Foundation Match
+                    Encontre Seu Tom Perfeito de Base Natura
                 </h1>
                 <p class="lead mb-4">
-                    Use advanced computer vision and color science to discover MAC foundation shades that perfectly complement your skin tone. Features complete shade range from Studio Fix Fluid, Face and Body, and Pro Longwear lines.
+                    Use visão computacional avançada e ciência das cores para descobrir tons de base Natura que combinam perfeitamente com sua pele. Inclui 10 linhas completas de produtos Natura com mais de 144 tons diferentes.
                 </p>
                 <div class="d-flex flex-wrap gap-3">
                     <div class="d-flex align-items-center">
                         <i class="fas fa-eye me-2"></i>
-                        <span>AI-Powered Skin Detection</span>
+                        <span>Detecção de Pele com IA</span>
                     </div>
                     <div class="d-flex align-items-center">
                         <i class="fas fa-palette me-2"></i>
-                        <span>LAB Color Space Analysis</span>
+                        <span>Análise LAB Color Space</span>
                     </div>
                     <div class="d-flex align-items-center">
                         <i class="fas fa-chart-line me-2"></i>
-                        <span>Delta E Color Matching</span>
+                        <span>Matching por Delta E</span>
                     </div>
                 </div>
             </div>
@@ -96,8 +96,17 @@
                                         <div class="face-outline"></div>
                                         <p class="guide-text">Position your face within the oval</p>
                                     </div>
+                                    
+                                    <!-- Light Level Indicator -->
+                                    <div class="light-indicator" id="lightIndicator">
+                                        <div class="light-meter">
+                                            <div class="light-level" id="lightLevel"></div>
+                                        </div>
+                                        <p class="light-text" id="lightText">Checking light...</p>
+                                    </div>
                                 </div>
                                 <canvas id="captureCanvas" style="display: none;"></canvas>
+                                <canvas id="lightAnalysisCanvas" style="display: none;"></canvas>
                             </div>
                             
                             <div class="camera-controls mt-3">
@@ -292,8 +301,8 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-8 mx-auto text-center">
-                <h2 class="mb-4">How It Works</h2>
-                <p class="lead mb-5">Our MAC foundation matcher uses cutting-edge computer vision and color science research to find your perfect MAC shade from their complete product range.</p>
+                <h2 class="mb-4">Como Funciona</h2>
+                <p class="lead mb-5">Nosso matcher de base Natura usa visão computacional de ponta e pesquisa em ciência das cores para encontrar seu tom perfeito Natura de toda a linha de produtos.</p>
             </div>
         </div>
         <div class="row g-4">
@@ -303,8 +312,8 @@
                         <div class="text-primary mb-3">
                             <i class="fas fa-upload fa-3x"></i>
                         </div>
-                        <h5>1. Upload Photo</h5>
-                        <p class="text-muted">Upload a clear selfie with good lighting</p>
+                        <h5>1. Carregue Foto</h5>
+                        <p class="text-muted">Carregue uma selfie clara com boa iluminação</p>
                     </div>
                 </div>
             </div>
@@ -314,8 +323,8 @@
                         <div class="text-primary mb-3">
                             <i class="fas fa-eye fa-3x"></i>
                         </div>
-                        <h5>2. Skin Detection</h5>
-                        <p class="text-muted">AI identifies skin pixels using RGB-H-CbCr algorithm</p>
+                        <h5>2. Detecção de Pele</h5>
+                        <p class="text-muted">IA identifica pixels de pele usando algoritmo RGB-H-CbCr</p>
                     </div>
                 </div>
             </div>
@@ -325,8 +334,8 @@
                         <div class="text-primary mb-3">
                             <i class="fas fa-palette fa-3x"></i>
                         </div>
-                        <h5>3. Color Analysis</h5>
-                        <p class="text-muted">Convert to LAB color space for accurate analysis</p>
+                        <h5>3. Análise de Cor</h5>
+                        <p class="text-muted">Converte para espaço de cor LAB para análise precisa</p>
                     </div>
                 </div>
             </div>
@@ -336,8 +345,8 @@
                         <div class="text-primary mb-3">
                             <i class="fas fa-award fa-3x"></i>
                         </div>
-                        <h5>4. Match Ranking</h5>
-                        <p class="text-muted">Rank foundations by Delta E color difference</p>
+                        <h5>4. Ranking de Matches</h5>
+                        <p class="text-muted">Classifica bases por diferença de cor Delta E</p>
                     </div>
                 </div>
             </div>
@@ -470,6 +479,9 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentStream = null;
     let facingMode = 'user'; // 'user' for front camera, 'environment' for back camera
     let capturedImageBlob = null;
+    let lightMonitoringInterval = null;
+    let currentLightLevel = 0;
+    let lightWarningShown = false;
     
     // Upload method switching
     uploadFileTab.addEventListener('change', function() {
@@ -715,6 +727,11 @@ document.addEventListener('DOMContentLoaded', function() {
             currentStream = await navigator.mediaDevices.getUserMedia(constraints);
             cameraPreview.srcObject = currentStream;
             
+            // Start light monitoring when camera starts
+            cameraPreview.addEventListener('loadeddata', () => {
+                startLightMonitoring();
+            });
+            
             // Check if device has multiple cameras
             const devices = await navigator.mediaDevices.enumerateDevices();
             const videoDevices = devices.filter(device => device.kind === 'videoinput');
@@ -730,6 +747,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function stopCamera() {
+        stopLightMonitoring(); // Stop light monitoring
         if (currentStream) {
             currentStream.getTracks().forEach(track => track.stop());
             currentStream = null;
@@ -840,6 +858,256 @@ document.addEventListener('DOMContentLoaded', function() {
             default:
                 return 'Camera access failed. Please try again.';
         }
+    }
+    
+    // Light Detection Functions
+    function startLightMonitoring() {
+        if (lightMonitoringInterval) {
+            clearInterval(lightMonitoringInterval);
+        }
+        
+        lightMonitoringInterval = setInterval(() => {
+            analyzeLightLevel();
+        }, 500); // Check every 500ms
+    }
+    
+    function stopLightMonitoring() {
+        if (lightMonitoringInterval) {
+            clearInterval(lightMonitoringInterval);
+            lightMonitoringInterval = null;
+        }
+    }
+    
+    function analyzeLightLevel() {
+        if (!currentStream || !cameraPreview.videoWidth) return;
+        
+        const canvas = document.getElementById('lightAnalysisCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Set canvas size to a small sample for performance
+        canvas.width = 64;
+        canvas.height = 48;
+        
+        // Draw current video frame
+        ctx.drawImage(cameraPreview, 0, 0, canvas.width, canvas.height);
+        
+        // Get image data
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        
+        // Calculate average brightness
+        let totalBrightness = 0;
+        let pixelCount = 0;
+        
+        for (let i = 0; i < data.length; i += 4) {
+            const r = data[i];
+            const g = data[i + 1];
+            const b = data[i + 2];
+            
+            // Calculate luminance using standard formula
+            const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+            totalBrightness += luminance;
+            pixelCount++;
+        }
+        
+        const averageBrightness = totalBrightness / pixelCount;
+        
+        // Update light level display
+        updateLightIndicator(averageBrightness);
+        
+        // Show warnings if needed
+        checkLightingWarnings(averageBrightness);
+    }
+    
+    function updateLightIndicator(brightness) {
+        currentLightLevel = brightness;
+        
+        const lightLevel = document.getElementById('lightLevel');
+        const lightText = document.getElementById('lightText');
+        
+        // Calculate percentage (0-255 brightness to 0-100%)
+        const percentage = Math.min(100, (brightness / 200) * 100);
+        lightLevel.style.width = percentage + '%';
+        
+        // Determine light quality
+        let quality, message, className;
+        
+        if (brightness >= 140) {
+            quality = 'excellent';
+            message = 'Excelente';
+            className = 'light-excellent';
+        } else if (brightness >= 100) {
+            quality = 'good';
+            message = 'Boa';
+            className = 'light-good';
+        } else if (brightness >= 70) {
+            quality = 'fair';
+            message = 'Razoável';
+            className = 'light-fair';
+        } else if (brightness >= 40) {
+            quality = 'poor';
+            message = 'Fraca';
+            className = 'light-poor';
+        } else {
+            quality = 'very-poor';
+            message = 'Muito Fraca';
+            className = 'light-very-poor';
+        }
+        
+        lightText.textContent = `${message} (${Math.round(percentage)}%)`;
+        lightText.className = `light-text ${className}`;
+        
+        // Store quality for capture decision
+        lightLevel.setAttribute('data-quality', quality);
+    }
+    
+    function checkLightingWarnings(brightness) {
+        const cameraOverlay = document.querySelector('.camera-overlay');
+        let existingWarning = cameraOverlay.querySelector('.light-warning');
+        
+        if (brightness < 70 && !lightWarningShown) {
+            if (!existingWarning) {
+                const warning = document.createElement('div');
+                warning.className = 'light-warning';
+                warning.innerHTML = `
+                    <h6><i class="fas fa-exclamation-triangle me-2"></i>Iluminação Insuficiente</h6>
+                    <p>Para melhores resultados, mova-se para um local com mais luz natural ou artificial.</p>
+                `;
+                cameraOverlay.appendChild(warning);
+                lightWarningShown = true;
+                
+                // Show lighting tips
+                showLightingTips();
+            }
+        } else if (brightness >= 100 && existingWarning) {
+            existingWarning.remove();
+            lightWarningShown = false;
+            hideLightingTips();
+        }
+    }
+    
+    function showLightingTips() {
+        let tipsElement = document.querySelector('.lighting-tips');
+        if (!tipsElement) {
+            tipsElement = document.createElement('div');
+            tipsElement.className = 'lighting-tips';
+            tipsElement.innerHTML = `
+                <strong>💡 Dicas de Iluminação:</strong><br>
+                • Posicione-se próximo a uma janela<br>
+                • Evite luz direta no rosto<br>
+                • Use luz uniforme sem sombras<br>
+                • Evite luzes amareladas ou coloridas
+            `;
+            document.querySelector('.camera-preview-container').appendChild(tipsElement);
+        }
+        tipsElement.classList.add('show');
+    }
+    
+    function hideLightingTips() {
+        const tipsElement = document.querySelector('.lighting-tips');
+        if (tipsElement) {
+            tipsElement.classList.remove('show');
+        }
+    }
+    
+    // Enhanced capture function with light checking
+    function capturePhotoWithLightCheck() {
+        const lightQuality = document.getElementById('lightLevel').getAttribute('data-quality');
+        
+        if (lightQuality === 'very-poor' || lightQuality === 'poor') {
+            const proceed = confirm(
+                'A iluminação está fraca, o que pode afetar a precisão da análise de cor. ' +
+                'Deseja continuar mesmo assim ou melhorar a iluminação primeiro?'
+            );
+            if (!proceed) return;
+        }
+        
+        capturePhoto();
+    }
+    
+    // Image brightness analysis for uploaded photos
+    function analyzeUploadedImageBrightness(imageElement) {
+        return new Promise((resolve) => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Use a smaller canvas for performance
+            const maxSize = 200;
+            let width = imageElement.naturalWidth;
+            let height = imageElement.naturalHeight;
+            
+            if (width > height) {
+                if (width > maxSize) {
+                    height = (height * maxSize) / width;
+                    width = maxSize;
+                }
+            } else {
+                if (height > maxSize) {
+                    width = (width * maxSize) / height;
+                    height = maxSize;
+                }
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            
+            ctx.drawImage(imageElement, 0, 0, width, height);
+            
+            const imageData = ctx.getImageData(0, 0, width, height);
+            const data = imageData.data;
+            
+            let totalBrightness = 0;
+            let pixelCount = 0;
+            
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i];
+                const g = data[i + 1];
+                const b = data[i + 2];
+                
+                const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+                totalBrightness += luminance;
+                pixelCount++;
+            }
+            
+            const averageBrightness = totalBrightness / pixelCount;
+            resolve(averageBrightness);
+        });
+    }
+    
+    function showBrightnessWarning(brightness, container) {
+        // Remove existing warnings
+        const existingWarning = container.querySelector('.brightness-warning');
+        if (existingWarning) {
+            existingWarning.remove();
+        }
+        
+        let warningLevel, message, className;
+        
+        if (brightness < 50) {
+            warningLevel = 'danger';
+            message = '⚠️ Imagem muito escura - Pode afetar significativamente a precisão da análise';
+            className = 'brightness-warning danger';
+        } else if (brightness < 80) {
+            warningLevel = 'warning';
+            message = '💡 Imagem um pouco escura - Para melhores resultados, use uma foto com mais luz';
+            className = 'brightness-warning warning';
+        } else if (brightness > 220) {
+            warningLevel = 'warning';
+            message = '☀️ Imagem muito clara - Evite superexposição para melhores resultados';
+            className = 'brightness-warning warning';
+        } else {
+            warningLevel = 'success';
+            message = '✅ Boa qualidade de iluminação detectada';
+            className = 'brightness-warning success';
+        }
+        
+        const warningDiv = document.createElement('div');
+        warningDiv.className = className;
+        warningDiv.textContent = message;
+        
+        container.appendChild(warningDiv);
+        
+        return warningLevel;
     }
     
     // Check if device supports camera

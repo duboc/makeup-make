@@ -15,10 +15,14 @@ import uuid
 from werkzeug.utils import secure_filename
 import json
 import logging
+from datetime import datetime
+import time
+from functools import wraps
+from collections import defaultdict
+import threading
 
 # Import calibration modules
 from calibration import ColorCalibrator, CIEColorConverter
-from mac_foundation_database import convert_mac_database_to_app_format
 from natura_foundation_database import convert_natura_database_to_app_format
 
 app = Flask(__name__)
@@ -38,37 +42,237 @@ app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 os.makedirs('static/calibration_profiles', exist_ok=True)
 
+# API Configuration
+API_VERSION = "1.0"
+MAX_FILE_SIZE_MB = 10
+ALLOWED_IMAGE_TYPES = {'image/jpeg', 'image/jpg', 'image/png', 'image/webp'}
+MIN_IMAGE_DIMENSION = 200
+MAX_IMAGE_DIMENSION = 4000
+
+# Rate limiting setup
+rate_limit_storage = defaultdict(list)
+rate_limit_lock = threading.Lock()
+
+def rate_limit(max_requests=60, window=3600):
+    """Simple IP-based rate limiting decorator"""
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            # Get client IP
+            ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+            if ip:
+                ip = ip.split(',')[0].strip()
+            
+            current_time = time.time()
+            
+            with rate_limit_lock:
+                # Clean old entries
+                rate_limit_storage[ip] = [
+                    timestamp for timestamp in rate_limit_storage[ip]
+                    if current_time - timestamp < window
+                ]
+                
+                # Check rate limit
+                if len(rate_limit_storage[ip]) >= max_requests:
+                    retry_after = window - (current_time - rate_limit_storage[ip][0])
+                    response = jsonify({
+                        'success': False,
+                        'error': {
+                            'code': 'RATE_LIMIT_EXCEEDED',
+                            'message': f'Rate limit exceeded. Maximum {max_requests} requests per hour.',
+                            'retry_after_seconds': int(retry_after)
+                        }
+                    })
+                    response.status_code = 429
+                    response.headers['Retry-After'] = str(int(retry_after))
+                    return response
+                
+                # Add current request
+                rate_limit_storage[ip].append(current_time)
+            
+            return f(*args, **kwargs)
+        return decorated_function
+    return decorator
+
+def validate_image_file(file_data, content_type=None):
+    """Validate image file for API usage"""
+    try:
+        # Check file size
+        file_data.seek(0, 2)  # Seek to end
+        file_size = file_data.tell()
+        file_data.seek(0)  # Reset to beginning
+        
+        if file_size > MAX_FILE_SIZE_MB * 1024 * 1024:
+            return False, f"File size exceeds {MAX_FILE_SIZE_MB}MB limit"
+        
+        if file_size < 10 * 1024:  # 10KB minimum
+            return False, "File size too small"
+        
+        # Read image with PIL
+        try:
+            image = Image.open(file_data)
+            file_data.seek(0)  # Reset after PIL read
+        except Exception:
+            return False, "Invalid image file"
+        
+        # Check format
+        if content_type and content_type not in ALLOWED_IMAGE_TYPES:
+            if image.format.lower() not in ['jpeg', 'jpg', 'png', 'webp']:
+                return False, f"Image format not supported. Allowed: JPEG, PNG, WebP"
+        
+        # Check dimensions
+        width, height = image.size
+        if width < MIN_IMAGE_DIMENSION or height < MIN_IMAGE_DIMENSION:
+            return False, f"Image too small. Minimum dimension: {MIN_IMAGE_DIMENSION}x{MIN_IMAGE_DIMENSION}"
+        
+        if width > MAX_IMAGE_DIMENSION or height > MAX_IMAGE_DIMENSION:
+            return False, f"Image too large. Maximum dimension: {MAX_IMAGE_DIMENSION}x{MAX_IMAGE_DIMENSION}"
+        
+        return True, None
+        
+    except Exception as e:
+        return False, f"Error validating image: {str(e)}"
+
+def process_image_analysis(image_data, num_matches=5, include_statistics=False):
+    """Process image analysis for API"""
+    start_time = time.time()
+    
+    try:
+        # Save temporary file
+        temp_filename = f"api_{uuid.uuid4()}.jpg"
+        temp_path = os.path.join(app.config['UPLOAD_FOLDER'], temp_filename)
+        
+        # Save image data
+        image_data.seek(0)
+        with open(temp_path, 'wb') as f:
+            f.write(image_data.read())
+        
+        # Load with OpenCV
+        image = cv2.imread(temp_path)
+        if image is None:
+            os.remove(temp_path)
+            return None, "Could not load image"
+        
+        # Detect skin
+        skin_mask = predictor.skin_detector.detect_skin(image)
+        
+        # Check if skin was detected
+        skin_pixel_count = np.sum(skin_mask > 0)
+        if skin_pixel_count == 0:
+            os.remove(temp_path)
+            return None, "NO_SKIN_DETECTED"
+        
+        # Get average skin color
+        avg_skin_bgr = predictor.skin_detector.get_average_skin_color(image, skin_mask)
+        avg_skin_rgb = np.array([avg_skin_bgr[2], avg_skin_bgr[1], avg_skin_bgr[0]])
+        
+        # Convert to LAB
+        if global_calibrator.is_calibrated:
+            skin_color_lab = global_calibrator.rgb_to_lab_calibrated(avg_skin_rgb).tolist()
+        else:
+            skin_color_lab = global_calibrator.converter.srgb_to_lab(avg_skin_rgb).tolist()
+        
+        # Detect undertone
+        undertone_info = predictor.detect_undertone(skin_color_lab)
+        
+        # Get statistics if requested
+        skin_stats = None
+        if include_statistics:
+            skin_stats = predictor.skin_detector.get_skin_color_statistics(image, skin_mask)
+        
+        # Find foundation matches
+        matches = predictor.find_best_foundation_matches(skin_color_lab, num_matches=num_matches)
+        
+        # Clean up temp file
+        os.remove(temp_path)
+        
+        # Calculate processing time
+        processing_time = int((time.time() - start_time) * 1000)
+        
+        # Format response
+        response_data = {
+            'skin_analysis': {
+                'color': {
+                    'lab': {
+                        'L': round(skin_color_lab[0], 1),
+                        'a': round(skin_color_lab[1], 1),
+                        'b': round(skin_color_lab[2], 1)
+                    },
+                    'rgb': {
+                        'r': int(avg_skin_rgb[0]),
+                        'g': int(avg_skin_rgb[1]),
+                        'b': int(avg_skin_rgb[2])
+                    },
+                    'hex': '#{:02x}{:02x}{:02x}'.format(
+                        int(avg_skin_rgb[0]),
+                        int(avg_skin_rgb[1]),
+                        int(avg_skin_rgb[2])
+                    )
+                },
+                'pixels_analyzed': int(skin_pixel_count),
+                'undertone': {
+                    'primary': undertone_info['primary'],
+                    'confidence': round(undertone_info['confidence'], 1)
+                }
+            },
+            'matches': [],
+            'processing_time_ms': processing_time
+        }
+        
+        # Add matches
+        for match in matches:
+            foundation = match['foundation']
+            delta_e = match['delta_e']
+            match_score = max(0, 100 - (delta_e * 5))
+            
+            # Determine quality
+            if delta_e < 1:
+                quality = "excellent"
+            elif delta_e < 2:
+                quality = "very_good"
+            elif delta_e < 3:
+                quality = "good"
+            elif delta_e < 5:
+                quality = "fair"
+            else:
+                quality = "poor"
+            
+            response_data['matches'].append({
+                'rank': len(response_data['matches']) + 1,
+                'brand': foundation['brand'],
+                'product_line': foundation['product_line'],
+                'shade': foundation['shade'],
+                'shade_name': foundation.get('description', ''),
+                'delta_e': round(delta_e, 2),
+                'match_percentage': round(match_score, 1),
+                'match_quality': quality
+            })
+        
+        return response_data, None
+        
+    except Exception as e:
+        return None, f"Processing error: {str(e)}"
+
 class FoundationColorPredictor:
     def __init__(self):
         self.skin_detector = SkinDetector()
         self.color_calibrator = ColorCalibrator()
         self.prediction_model = None
-        self.foundation_databases = {
-            'MAC': None,
-            'Natura': None
-        }
-        self.current_brand = 'MAC'  # Default brand
-        self.load_foundation_databases()
+        self.foundation_database = None
+        self.current_brand = 'Natura'  # Only brand
+        self.load_foundation_database()
     
-    def load_foundation_databases(self):
-        """Load foundation databases for all supported brands"""
-        self.foundation_databases['MAC'] = convert_mac_database_to_app_format()
-        self.foundation_databases['Natura'] = convert_natura_database_to_app_format()
-    
-    def set_brand(self, brand):
-        """Set the current brand for foundation matching"""
-        if brand in self.foundation_databases:
-            self.current_brand = brand
-            return True
-        return False
+    def load_foundation_database(self):
+        """Load Natura foundation database"""
+        self.foundation_database = convert_natura_database_to_app_format()
     
     def get_current_database(self):
-        """Get the current brand's foundation database"""
-        return self.foundation_databases.get(self.current_brand, {})
+        """Get the Natura foundation database"""
+        return self.foundation_database or {}
     
     def get_available_brands(self):
-        """Get list of available brands"""
-        return list(self.foundation_databases.keys())
+        """Get list of available brands (Natura only)"""
+        return ['Natura']
     
     def predict_foundation_match(self, skin_lab, foundation_lab):
         """Predict the resulting skin color when foundation is applied"""
@@ -783,37 +987,7 @@ predictor = FoundationColorPredictor()
 
 @app.route('/')
 def index():
-    # Get available brands for the UI
-    available_brands = predictor.get_available_brands()
-    current_brand = predictor.current_brand
-    return render_template('index.html', available_brands=available_brands, current_brand=current_brand)
-
-@app.route('/brands', methods=['GET'])
-def get_brands():
-    """Get available brands"""
-    return jsonify({
-        'brands': predictor.get_available_brands(),
-        'current': predictor.current_brand
-    })
-
-@app.route('/brands/set', methods=['POST'])
-def set_brand():
-    """Set the current brand for foundation matching"""
-    data = request.get_json()
-    if not data or 'brand' not in data:
-        return jsonify({'error': 'Brand parameter required'}), 400
-    
-    brand = data['brand']
-    if predictor.set_brand(brand):
-        # Store in session for persistence
-        session['selected_brand'] = brand
-        return jsonify({
-            'success': True,
-            'brand': brand,
-            'message': f'Switched to {brand} foundations'
-        })
-    else:
-        return jsonify({'error': f'Invalid brand: {brand}'}), 400
+    return render_template('index.html')
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -847,10 +1021,6 @@ def analyze_image():
     
     if not os.path.exists(filepath):
         return jsonify({'error': 'File not found'}), 404
-    
-    # Restore brand from session if available
-    if 'selected_brand' in session:
-        predictor.set_brand(session['selected_brand'])
     
     try:
         # Load image
@@ -1177,6 +1347,240 @@ def reset_calibration():
         del session['chart_data']
     
     return jsonify({'success': True, 'calibrated': False})
+
+# ============ API ENDPOINTS ============
+
+@app.route('/api/v1/health', methods=['GET'])
+def api_health():
+    """API health check endpoint"""
+    return jsonify({
+        'status': 'healthy',
+        'version': API_VERSION,
+        'timestamp': datetime.utcnow().isoformat() + 'Z'
+    })
+
+@app.route('/api/v1/status', methods=['GET'])
+def api_status():
+    """API status and capabilities endpoint"""
+    return jsonify({
+        'api_version': API_VERSION,
+        'capabilities': {
+            'brands': predictor.get_available_brands(),
+            'max_file_size_mb': MAX_FILE_SIZE_MB,
+            'supported_formats': ['jpg', 'jpeg', 'png', 'webp'],
+            'rate_limit': '60 requests/hour',
+            'min_image_dimension': MIN_IMAGE_DIMENSION,
+            'max_image_dimension': MAX_IMAGE_DIMENSION
+        },
+        'features': {
+            'skin_detection': True,
+            'undertone_analysis': True,
+            'foundation_matching': True,
+            'color_calibration': global_calibrator.is_calibrated
+        }
+    })
+
+@app.route('/api/v1/calibration/status', methods=['GET'])
+def api_calibration_status():
+    """Get calibration status for API"""
+    calibration_info = global_calibrator.get_calibration_info()
+    return jsonify({
+        'calibrated': calibration_info['calibrated'],
+        'quality_score': calibration_info.get('quality_score', None),
+        'calibration_date': calibration_info.get('calibration_date', None)
+    })
+
+@app.route('/api/v1/analyze', methods=['POST'])
+@rate_limit(max_requests=60, window=3600)
+def api_analyze():
+    """Main API endpoint for skin color analysis and foundation matching"""
+    try:
+        # Handle different content types
+        image_data = None
+        options = {}
+        
+        # Check content type
+        content_type = request.headers.get('Content-Type', '')
+        
+        if 'multipart/form-data' in content_type:
+            # Binary upload (recommended)
+            if 'image' not in request.files:
+                return jsonify({
+                    'success': False,
+                    'error': {
+                        'code': 'NO_IMAGE',
+                        'message': 'No image provided',
+                        'details': 'Use form field name "image" for the image file'
+                    }
+                }), 400
+            
+            image_file = request.files['image']
+            if image_file.filename == '':
+                return jsonify({
+                    'success': False,
+                    'error': {
+                        'code': 'NO_IMAGE',
+                        'message': 'No image selected',
+                        'details': 'File appears to be empty'
+                    }
+                }), 400
+            
+            # Get options from form data
+            options = {
+                'num_matches': int(request.form.get('num_matches', 5)),
+                'include_statistics': request.form.get('include_statistics', '').lower() == 'true'
+            }
+            
+            # Validate image
+            is_valid, error_msg = validate_image_file(image_file, image_file.content_type)
+            if not is_valid:
+                return jsonify({
+                    'success': False,
+                    'error': {
+                        'code': 'INVALID_IMAGE',
+                        'message': error_msg,
+                        'details': 'Please check image format, size, and dimensions'
+                    }
+                }), 400
+            
+            image_data = io.BytesIO(image_file.read())
+            
+        elif 'application/json' in content_type:
+            # JSON with base64 (alternative method)
+            data = request.get_json()
+            if not data or 'image' not in data:
+                return jsonify({
+                    'success': False,
+                    'error': {
+                        'code': 'NO_IMAGE',
+                        'message': 'No image provided in JSON',
+                        'details': 'Include "image" field with base64 data'
+                    }
+                }), 400
+            
+            # Parse base64 image
+            try:
+                image_str = data['image']
+                # Remove data URL prefix if present
+                if 'base64,' in image_str:
+                    image_str = image_str.split('base64,')[1]
+                
+                image_bytes = base64.b64decode(image_str)
+                image_data = io.BytesIO(image_bytes)
+                
+                # Validate image
+                is_valid, error_msg = validate_image_file(image_data)
+                if not is_valid:
+                    return jsonify({
+                        'success': False,
+                        'error': {
+                            'code': 'INVALID_IMAGE',
+                            'message': error_msg,
+                            'details': 'Please check image format, size, and dimensions'
+                        }
+                    }), 400
+                
+            except Exception as e:
+                return jsonify({
+                    'success': False,
+                    'error': {
+                        'code': 'INVALID_BASE64',
+                        'message': 'Invalid base64 image data',
+                        'details': str(e)
+                    }
+                }), 400
+            
+            # Get options from JSON
+            options = {
+                'num_matches': data.get('num_matches', 5),
+                'include_statistics': data.get('include_statistics', False)
+            }
+            
+        else:
+            return jsonify({
+                'success': False,
+                'error': {
+                    'code': 'UNSUPPORTED_CONTENT_TYPE',
+                    'message': f'Content-Type {content_type} not supported',
+                    'details': 'Use multipart/form-data for binary upload or application/json for base64'
+                }
+            }), 400
+        
+        # Validate options
+        options['num_matches'] = max(1, min(20, options['num_matches']))  # Limit between 1-20
+        
+        # Process image analysis
+        result, error_code = process_image_analysis(
+            image_data,
+            num_matches=options['num_matches'],
+            include_statistics=options['include_statistics']
+        )
+        
+        if result is None:
+            if error_code == 'NO_SKIN_DETECTED':
+                return jsonify({
+                    'success': False,
+                    'error': {
+                        'code': 'NO_SKIN_DETECTED',
+                        'message': 'No skin detected in the image',
+                        'details': 'Please ensure good lighting and clear face visibility',
+                        'suggestions': [
+                            'Use natural lighting',
+                            'Ensure face is clearly visible',
+                            'Avoid shadows on face',
+                            'Remove glasses if possible'
+                        ]
+                    }
+                }), 400
+            else:
+                return jsonify({
+                    'success': False,
+                    'error': {
+                        'code': 'PROCESSING_ERROR',
+                        'message': error_code or 'Error processing image',
+                        'details': 'An error occurred during analysis'
+                    }
+                }), 500
+        
+        # Return successful result
+        return jsonify({
+            'success': True,
+            'data': result
+        })
+        
+    except Exception as e:
+        # Log the error for debugging
+        app.logger.error(f"API analyze error: {str(e)}")
+        
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'INTERNAL_ERROR',
+                'message': 'An unexpected error occurred',
+                'details': str(e) if app.debug else 'Please try again later'
+            }
+        }), 500
+
+# CORS headers for API endpoints
+@app.after_request
+def after_request(response):
+    """Add CORS headers for API endpoints"""
+    if request.path.startswith('/api/'):
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+        response.headers['Access-Control-Max-Age'] = '3600'
+    return response
+
+# Handle OPTIONS requests for CORS
+@app.route('/api/v1/<path:path>', methods=['OPTIONS'])
+def handle_options(path):
+    """Handle preflight OPTIONS requests"""
+    response = jsonify({'status': 'ok'})
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+    return response
 
 def allowed_file(filename):
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'bmp'}

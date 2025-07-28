@@ -1,6 +1,6 @@
-# Natura Foundation Color Matcher - Flask Application
+# O Boticário Foundation Matcher - Flask Application
 
-A sophisticated web application that uses computer vision and color science to find the perfect Natura foundation match for your skin tone. This Flask application focuses exclusively on Natura's Una Base Fluida HD and Una Corretivo Cobertura Extrema 24h product lines, implementing research-based algorithms for accurate skin color analysis.
+A sophisticated web application that uses computer vision and color science to find the perfect O Boticário foundation match for your skin tone. This Flask application focuses exclusively on O Boticário's QDB Tô No Glow and Make B. product lines, implementing research-based algorithms for accurate skin color analysis.
 
 ## Features
 
@@ -130,32 +130,29 @@ The application supports professional-grade color calibration using X-Rite Color
 - **Chromatic Adaptation**: Bradford transform for illuminant changes
 - **CIE Color Conversion**: Accurate sRGB ↔ XYZ ↔ LAB transformations
 
-## Natura Foundation Database
+## O Boticário Foundation Database
 
-The application includes a comprehensive Natura foundation database featuring:
+The application includes a comprehensive O Boticário foundation database featuring:
 
-### 10 Complete Product Lines:
-1. **Una Base Fluida HD FPS 15**: High definition liquid foundation with professional finish (24 shades)
-2. **Una Corretivo Cobertura Extrema 24h**: Extreme coverage concealer for 24-hour wear (12 shades)
-3. **Una Base Líquida Mousse FPS 20**: Unique mousse texture for perfect coverage (18 shades)
-4. **Una Base Cremosa FPS 25**: Creamy formula that hydrates while covering (18 shades)
-5. **Una Base Stick FPS 30**: Convenient stick format for quick touch-ups (12 shades)
-6. **Aqua Base Hidratante FPS 15**: Hyaluronic acid formula for hydration (15 shades)
-7. **Una Base em Pó Compacto FPS 20**: Compact powder convenience with base coverage (15 shades)
-8. **Una BB Cream FPS 30**: All-in-one beauty product with universal shades (5 shades)
-9. **Una CC Cream FPS 35**: Color correcting cream with high SPF (10 shades)
-10. **Una Base Mineral FPS 25**: Breathable mineral formula for sensitive skin (15 shades)
+### 6 Specialized Product Lines:
+1. **QDB Base Líquida Tô No Glow 30ml**: Base with natural glow, medium coverage and oil-free hydration (20 shades)
+2. **Make B. Base Líquida Mate Salicylic 30g**: Mattifying base with salicylic acid for oil control (23 shades)
+3. **Make B. Base Líquida Glycolic TX FPS 50 30g**: Anti-spot base with glycolic and tranexamic acid (13 shades)
+4. **Make B. Base Líquida Retinol H+ FPS 80 26g**: Anti-aging base with retinol and hyaluronic acid (13 shades)
+5. **Make B. Base em Pó Mineral 5,5g**: Mineral powder base with natural coverage (6 shades)
+6. **Make B. Corretivo Líquido Effect 5,7ml**: High coverage liquid concealer (9 shades)
 
 ### Database Features:
-- **144+ total foundation shades** covering complete Brazilian skin tone diversity
+- **84+ total foundation shades** covering complete Brazilian skin tone diversity
 - 8 tone categories (Very Fair, Fair, Light, Light Medium, Medium, Medium Deep, Deep, Very Deep)
-- 3 undertone variations per shade (Cool/Frio, Neutral/Neutro, Warm/Quente)
-- Scientifically calculated LAB color values for each Natura shade
-- Accurate color representation based on Natura's actual shade range
+- 4 undertone variations per shade (Cool/Frio, Neutral/Neutro, Warm/Quente, Olive/Oliva)
+- Scientifically calculated LAB color values for each O Boticário shade
+- Accurate color representation based on O Boticário's actual shade range
 - Specific coverage, finish, and skin type information for each product line
-- Specialized formulations for different skin needs (oily, dry, sensitive, combination)
-- Multiple coverage levels from light (BB/CC creams) to extreme (concealer)
-- Various finishes: Natural, Matte, Luminous, Semi-Matte, Hydrating
+- Specialized formulations for different skin concerns (oily, dry, sensitive, mature, acne-prone)
+- Multiple coverage levels from light (mineral) to extreme (concealer)
+- Various finishes: Natural Radiante, Matte, Natural, Natural Luminoso, Matte Mineral
+- Advanced skincare benefits: Anti-aging, Oil control, Anti-spot, Hydration, Sun protection
 
 ## Color Science Background
 

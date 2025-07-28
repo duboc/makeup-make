@@ -24,6 +24,7 @@ import threading
 # Import calibration modules
 from calibration import ColorCalibrator, CIEColorConverter
 from natura_foundation_database import convert_natura_database_to_app_format
+from boticario_foundation_database import convert_boticario_database_to_app_format
 
 app = Flask(__name__)
 
@@ -258,21 +259,30 @@ class FoundationColorPredictor:
         self.skin_detector = SkinDetector()
         self.color_calibrator = ColorCalibrator()
         self.prediction_model = None
-        self.foundation_database = None
-        self.current_brand = 'Natura'  # Only brand
-        self.load_foundation_database()
+        self.foundation_databases = {}
+        self.current_brand = 'O Boticário'  # Default to O Boticário
+        self.load_foundation_databases()
     
-    def load_foundation_database(self):
-        """Load Natura foundation database"""
-        self.foundation_database = convert_natura_database_to_app_format()
+    def load_foundation_databases(self):
+        """Load O Boticário foundation database"""
+        self.foundation_databases = {
+            'O Boticário': convert_boticario_database_to_app_format()
+        }
     
     def get_current_database(self):
-        """Get the Natura foundation database"""
-        return self.foundation_database or {}
+        """Get the O Boticário foundation database"""
+        return self.foundation_databases.get('O Boticário', {})
     
     def get_available_brands(self):
-        """Get list of available brands (Natura only)"""
-        return ['Natura']
+        """Get list of available brands"""
+        return list(self.foundation_databases.keys())
+    
+    def set_brand(self, brand_name):
+        """Set the current brand for analysis"""
+        if brand_name in self.get_available_brands():
+            self.current_brand = brand_name
+            return True
+        return False
     
     def predict_foundation_match(self, skin_lab, foundation_lab):
         """Predict the resulting skin color when foundation is applied"""

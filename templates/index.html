@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Natura Foundation Color Matcher - Encontre Seu Tom Perfeito{% endblock %}
+{% block title %}O Boticário Foundation Matcher - Encontre Seu Tom Perfeito{% endblock %}
 
 {% block content %}
 <!-- Hero Section -->
@@ -10,10 +10,10 @@
             <div class="col-lg-8">
                 <h1 class="display-4 fw-bold mb-4">
                     <i class="fas fa-magic me-3"></i>
-                    Encontre Seu Tom Perfeito de Base Natura
+                    Encontre Seu Tom Perfeito de Base O Boticário
                 </h1>
                 <p class="lead mb-4">
-                    Use visão computacional avançada e ciência das cores para descobrir tons de base Natura que combinam perfeitamente com sua pele. Inclui 10 linhas completas de produtos Natura com mais de 144 tons diferentes.
+                    Use visão computacional avançada e ciência das cores para descobrir tons de base O Boticário que combinam perfeitamente com sua pele. Análise de mais de 230 tons entre 18 linhas especializadas.
                 </p>
                 <div class="d-flex flex-wrap gap-3">
                     <div class="d-flex align-items-center">
@@ -32,6 +32,48 @@
             </div>
             <div class="col-lg-4 text-center">
                 <i class="fas fa-user-circle" style="font-size: 8rem; opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Key Benefits Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center mb-5">
+                <h2 class="mb-3">Descubra Sua Cor com Precisão Científica</h2>
+                <p class="lead text-muted">Tecnologia avançada de análise de cor para encontrar seu tom perfeito entre mais de 230 tons O Boticário</p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4 text-center">
+                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <i class="fas fa-camera fa-2x"></i>
+                </div>
+                <h5>Faça Upload ou Use a Câmera</h5>
+                <p class="text-muted">Carregue uma selfie ou use a câmera em tempo real com guias visuais para captura perfeita</p>
+            </div>
+            <div class="col-md-4 text-center">
+                <div class="bg-secondary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <i class="fas fa-eye fa-2x"></i>
+                </div>
+                <h5>Análise Inteligente da Pele</h5>
+                <p class="text-muted">IA detecta automaticamente pixels de pele e analisa cor usando algoritmos RGB-H-CbCr</p>
+            </div>
+            <div class="col-md-4 text-center">
+                <div class="text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="background: var(--luxury-gold); width: 80px; height: 80px;">
+                    <i class="fas fa-award fa-2x"></i>
+                </div>
+                <h5>Recomendações Personalizadas</h5>
+                <p class="text-muted">Resultados precisos com Delta E e recomendações específicas para seu tipo de pele</p>
+            </div>
+        </div>
+        
+        <div class="text-center mt-5">
+            <div class="bg-white p-4 rounded-3 d-inline-block shadow-sm">
+                <h5 class="mb-2"><i class="fas fa-palette text-primary me-2"></i>18 Linhas • 230+ Tons Disponíveis</h5>
+                <p class="mb-0 text-muted">QDB, Make B., Base O Boticário, Nativa SPA e Intense - Análise LAB Color Space</p>
             </div>
         </div>
     </div>
@@ -89,43 +131,98 @@
                     <!-- Camera Interface -->
                     <div class="camera-area" id="cameraArea" style="display: none;">
                         <div id="cameraContent">
+                            <!-- Light Analysis Panel (Outside Camera Frame) -->
+                            <div class="light-analysis-panel" id="lightAnalysisPanel">
+                                <div class="light-analysis-header">
+                                    <h5 class="light-analysis-title">
+                                        <i class="fas fa-sun"></i>
+                                        Análise de Iluminação
+                                    </h5>
+                                    <div class="light-quality-indicator">
+                                        <div class="light-meter-container">
+                                            <div class="light-meter-fill" id="lightMeterFill">
+                                                <div class="light-meter-marker"></div>
+                                            </div>
+                                        </div>
+                                        <span class="light-quality-badge" id="lightQualityBadge">Analisando...</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="light-metrics" id="lightMetrics">
+                                    <div class="light-metric">
+                                        <div class="light-metric-value" id="brightness-value">--</div>
+                                        <div class="light-metric-label">Brilho</div>
+                                    </div>
+                                    <div class="light-metric">
+                                        <div class="light-metric-value" id="contrast-value">--</div>
+                                        <div class="light-metric-label">Contraste</div>
+                                    </div>
+                                    <div class="light-metric">
+                                        <div class="light-metric-value" id="uniformity-value">--</div>
+                                        <div class="light-metric-label">Uniformidade</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="light-recommendations" id="lightRecommendations">
+                                    <div class="light-recommendation-item">
+                                        <i class="fas fa-spinner fa-spin"></i>
+                                        <span>Analisando condições de iluminação...</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Camera Preview -->
                             <div class="camera-preview-container">
                                 <video id="cameraPreview" autoplay playsinline muted></video>
                                 <div class="camera-overlay">
                                     <div class="face-guide">
                                         <div class="face-outline"></div>
-                                        <p class="guide-text">Position your face within the oval</p>
+                                        <p class="guide-text">Posicione seu rosto dentro do oval</p>
                                     </div>
                                     
-                                    <!-- Light Level Indicator -->
-                                    <div class="light-indicator" id="lightIndicator">
-                                        <div class="light-meter">
-                                            <div class="light-level" id="lightLevel"></div>
-                                        </div>
-                                        <p class="light-text" id="lightText">Checking light...</p>
+                                    <!-- Face Detection Status -->
+                                    <div class="face-detection-status not-detected" id="faceDetectionStatus">
+                                        <div class="face-detection-icon"></div>
+                                        Posicione o rosto
                                     </div>
                                 </div>
                                 <canvas id="captureCanvas" style="display: none;"></canvas>
-                                <canvas id="lightAnalysisCanvas" style="display: none;"></canvas>
                             </div>
                             
-                            <div class="camera-controls mt-3">
-                                <button type="button" class="btn btn-outline-secondary me-2" id="switchCameraBtn" style="display: none;">
-                                    <i class="fas fa-sync-alt me-2"></i>Switch Camera
+                            <!-- Camera Controls -->
+                            <div class="camera-controls">
+                                <button type="button" class="btn btn-outline-secondary" id="switchCameraBtn" style="display: none;">
+                                    <i class="fas fa-sync-alt me-2"></i>Trocar Câmera
                                 </button>
-                                <button type="button" class="btn btn-primary btn-lg" id="captureBtn">
-                                    <i class="fas fa-camera me-2"></i>Capture Photo
-                                </button>
-                                <button type="button" class="btn btn-outline-danger ms-2" id="stopCameraBtn">
-                                    <i class="fas fa-times me-2"></i>Stop Camera
+                                
+                                <div class="capture-btn-container">
+                                    <button type="button" class="capture-btn" id="captureBtn">
+                                        <div class="capture-btn-inner"></div>
+                                    </button>
+                                </div>
+                                
+                                <button type="button" class="btn btn-outline-danger" id="stopCameraBtn">
+                                    <i class="fas fa-times me-2"></i>Parar
                                 </button>
                             </div>
                             
-                            <div class="camera-tips mt-3">
-                                <small class="text-muted">
-                                    <i class="fas fa-lightbulb me-1"></i>
-                                    <strong>Tips:</strong> Use natural lighting, face the camera directly, remove glasses if possible
-                                </small>
+                            <!-- Real-time Tips -->
+                            <div class="camera-tips-panel">
+                                <h6><i class="fas fa-info-circle me-2"></i>Dicas em Tempo Real</h6>
+                                <div id="cameraTips">
+                                    <div class="tip-item">
+                                        <i class="fas fa-check-circle"></i>
+                                        <span>Use luz natural sempre que possível</span>
+                                    </div>
+                                    <div class="tip-item">
+                                        <i class="fas fa-check-circle"></i>
+                                        <span>Evite sombras no rosto</span>
+                                    </div>
+                                    <div class="tip-item">
+                                        <i class="fas fa-check-circle"></i>
+                                        <span>Remova óculos se possível</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         
@@ -302,7 +399,7 @@
         <div class="row">
             <div class="col-lg-8 mx-auto text-center">
                 <h2 class="mb-4">Como Funciona</h2>
-                <p class="lead mb-5">Nosso matcher de base Natura usa visão computacional de ponta e pesquisa em ciência das cores para encontrar seu tom perfeito Natura de toda a linha de produtos.</p>
+                <p class="lead mb-5">Nosso matcher de base O Boticário usa visão computacional de ponta e pesquisa em ciência das cores para encontrar seu tom perfeito entre as linhas QDB e Make B. com benefícios únicos para cada tipo de pele.</p>
             </div>
         </div>
         <div class="row g-4">
@@ -345,8 +442,8 @@
                         <div class="text-primary mb-3">
                             <i class="fas fa-award fa-3x"></i>
                         </div>
-                        <h5>4. Ranking de Matches</h5>
-                        <p class="text-muted">Classifica bases por diferença de cor Delta E</p>
+                        <h5>4. Recomendações Personalizadas</h5>
+                        <p class="text-muted">Classifica produtos O Boticário por diferença de cor Delta E e benefícios para sua pele</p>
                     </div>
                 </div>
             </div>
@@ -355,7 +452,12 @@
 </section>
 {% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/camera-enhancements.css') }}">
+{% endblock %}
+
 {% block extra_js %}
+<script src="{{ url_for('static', filename='js/enhanced-light-detector.js') }}"></script>
 <script>
 // Performance optimization: Preload critical resources
 const preloadImage = (url) => {
@@ -479,9 +581,8 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentStream = null;
     let facingMode = 'user'; // 'user' for front camera, 'environment' for back camera
     let capturedImageBlob = null;
+    let lightDetector = null;
     let lightMonitoringInterval = null;
-    let currentLightLevel = 0;
-    let lightWarningShown = false;
     
     // Upload method switching
     uploadFileTab.addEventListener('change', function() {
@@ -727,6 +828,11 @@ document.addEventListener('DOMContentLoaded', function() {
             currentStream = await navigator.mediaDevices.getUserMedia(constraints);
             cameraPreview.srcObject = currentStream;
             
+            // Initialize enhanced light detector
+            if (!lightDetector) {
+                lightDetector = new EnhancedLightDetector();
+            }
+            
             // Start light monitoring when camera starts
             cameraPreview.addEventListener('loadeddata', () => {
                 startLightMonitoring();
@@ -764,11 +870,21 @@ document.addEventListener('DOMContentLoaded', function() {
     function capturePhoto() {
         if (!currentStream) return;
         
+        // Check light quality before capture
+        const quality = lightDetector?.currentMetrics.quality || 'unknown';
+        if (quality === 'poor') {
+            const proceed = confirm(
+                'A iluminação está fraca, o que pode afetar a precisão da análise de cor. ' +
+                'Deseja continuar mesmo assim?'
+            );
+            if (!proceed) return;
+        }
+        
         // Create flash effect
         const flash = document.createElement('div');
-        flash.className = 'capture-flash';
-        document.body.appendChild(flash);
-        setTimeout(() => document.body.removeChild(flash), 300);
+        flash.className = 'camera-flash';
+        cameraPreview.parentElement.appendChild(flash);
+        setTimeout(() => flash.remove(), 300);
         
         // Set canvas dimensions to match video
         const video = cameraPreview;
@@ -860,14 +976,27 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Light Detection Functions
+    // Enhanced Light Detection Functions
     function startLightMonitoring() {
         if (lightMonitoringInterval) {
             clearInterval(lightMonitoringInterval);
         }
         
-        lightMonitoringInterval = setInterval(() => {
-            analyzeLightLevel();
+        // Monitor light and face detection
+        lightMonitoringInterval = setInterval(async () => {
+            if (!lightDetector || !cameraPreview.videoWidth) return;
+            
+            // Analyze frame
+            lightDetector.analyzeFrame(cameraPreview);
+            
+            // Check for face
+            await lightDetector.detectFace(cameraPreview);
+            
+            // Update UI
+            lightDetector.updateUI();
+            
+            // Update real-time tips
+            updateCameraTips();
         }, 500); // Check every 500ms
     }
     
@@ -878,151 +1007,56 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    function analyzeLightLevel() {
-        if (!currentStream || !cameraPreview.videoWidth) return;
+    function updateCameraTips() {
+        const metrics = lightDetector?.currentMetrics;
+        if (!metrics) return;
         
-        const canvas = document.getElementById('lightAnalysisCanvas');
-        const ctx = canvas.getContext('2d');
+        const tipsContainer = document.getElementById('cameraTips');
+        const tips = [];
         
-        // Set canvas size to a small sample for performance
-        canvas.width = 64;
-        canvas.height = 48;
-        
-        // Draw current video frame
-        ctx.drawImage(cameraPreview, 0, 0, canvas.width, canvas.height);
-        
-        // Get image data
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const data = imageData.data;
-        
-        // Calculate average brightness
-        let totalBrightness = 0;
-        let pixelCount = 0;
-        
-        for (let i = 0; i < data.length; i += 4) {
-            const r = data[i];
-            const g = data[i + 1];
-            const b = data[i + 2];
-            
-            // Calculate luminance using standard formula
-            const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
-            totalBrightness += luminance;
-            pixelCount++;
+        // Quality-based tips
+        if (metrics.quality === 'excellent') {
+            tips.push({ type: 'success', text: 'Iluminação perfeita!' });
+        } else if (metrics.quality === 'good') {
+            tips.push({ type: 'success', text: 'Boa iluminação para análise' });
         }
         
-        const averageBrightness = totalBrightness / pixelCount;
-        
-        // Update light level display
-        updateLightIndicator(averageBrightness);
-        
-        // Show warnings if needed
-        checkLightingWarnings(averageBrightness);
-    }
-    
-    function updateLightIndicator(brightness) {
-        currentLightLevel = brightness;
-        
-        const lightLevel = document.getElementById('lightLevel');
-        const lightText = document.getElementById('lightText');
-        
-        // Calculate percentage (0-255 brightness to 0-100%)
-        const percentage = Math.min(100, (brightness / 200) * 100);
-        lightLevel.style.width = percentage + '%';
-        
-        // Determine light quality
-        let quality, message, className;
-        
-        if (brightness >= 140) {
-            quality = 'excellent';
-            message = 'Excelente';
-            className = 'light-excellent';
-        } else if (brightness >= 100) {
-            quality = 'good';
-            message = 'Boa';
-            className = 'light-good';
-        } else if (brightness >= 70) {
-            quality = 'fair';
-            message = 'Razoável';
-            className = 'light-fair';
-        } else if (brightness >= 40) {
-            quality = 'poor';
-            message = 'Fraca';
-            className = 'light-poor';
-        } else {
-            quality = 'very-poor';
-            message = 'Muito Fraca';
-            className = 'light-very-poor';
+        // Face detection tip
+        if (!metrics.faceDetected) {
+            tips.push({ type: 'warning', text: 'Posicione seu rosto no centro da câmera' });
         }
         
-        lightText.textContent = `${message} (${Math.round(percentage)}%)`;
-        lightText.className = `light-text ${className}`;
-        
-        // Store quality for capture decision
-        lightLevel.setAttribute('data-quality', quality);
-    }
-    
-    function checkLightingWarnings(brightness) {
-        const cameraOverlay = document.querySelector('.camera-overlay');
-        let existingWarning = cameraOverlay.querySelector('.light-warning');
-        
-        if (brightness < 70 && !lightWarningShown) {
-            if (!existingWarning) {
-                const warning = document.createElement('div');
-                warning.className = 'light-warning';
-                warning.innerHTML = `
-                    <h6><i class="fas fa-exclamation-triangle me-2"></i>Iluminação Insuficiente</h6>
-                    <p>Para melhores resultados, mova-se para um local com mais luz natural ou artificial.</p>
-                `;
-                cameraOverlay.appendChild(warning);
-                lightWarningShown = true;
-                
-                // Show lighting tips
-                showLightingTips();
-            }
-        } else if (brightness >= 100 && existingWarning) {
-            existingWarning.remove();
-            lightWarningShown = false;
-            hideLightingTips();
-        }
-    }
-    
-    function showLightingTips() {
-        let tipsElement = document.querySelector('.lighting-tips');
-        if (!tipsElement) {
-            tipsElement = document.createElement('div');
-            tipsElement.className = 'lighting-tips';
-            tipsElement.innerHTML = `
-                <strong>💡 Dicas de Iluminação:</strong><br>
-                • Posicione-se próximo a uma janela<br>
-                • Evite luz direta no rosto<br>
-                • Use luz uniforme sem sombras<br>
-                • Evite luzes amareladas ou coloridas
-            `;
-            document.querySelector('.camera-preview-container').appendChild(tipsElement);
-        }
-        tipsElement.classList.add('show');
-    }
-    
-    function hideLightingTips() {
-        const tipsElement = document.querySelector('.lighting-tips');
-        if (tipsElement) {
-            tipsElement.classList.remove('show');
-        }
-    }
-    
-    // Enhanced capture function with light checking
-    function capturePhotoWithLightCheck() {
-        const lightQuality = document.getElementById('lightLevel').getAttribute('data-quality');
-        
-        if (lightQuality === 'very-poor' || lightQuality === 'poor') {
-            const proceed = confirm(
-                'A iluminação está fraca, o que pode afetar a precisão da análise de cor. ' +
-                'Deseja continuar mesmo assim ou melhorar a iluminação primeiro?'
-            );
-            if (!proceed) return;
+        // Brightness tips
+        if (metrics.brightness < 100) {
+            tips.push({ type: 'warning', text: 'Procure um local mais iluminado' });
+        } else if (metrics.brightness > 200) {
+            tips.push({ type: 'warning', text: 'Reduza a intensidade da luz' });
         }
         
-        capturePhoto();
+        // Uniformity tips
+        if (metrics.uniformity < 0.6) {
+            tips.push({ type: 'info', text: 'Evite sombras fortes no rosto' });
+        }
+        
+        // Color temperature tip
+        if (metrics.colorTemp && (metrics.colorTemp.includes('Warm') || metrics.colorTemp.includes('Very Warm'))) {
+            tips.push({ type: 'info', text: 'Luz amarelada detectada - prefira luz branca' });
+        }
+        
+        // Default tips
+        if (tips.length === 0) {
+            tips.push({ type: 'success', text: 'Use luz natural sempre que possível' });
+            tips.push({ type: 'success', text: 'Mantenha o rosto centralizado' });
+            tips.push({ type: 'success', text: 'Evite reflexos e sombras' });
+        }
+        
+        // Update UI
+        tipsContainer.innerHTML = tips.map(tip => `
+            <div class="tip-item ${tip.type === 'warning' ? 'warning' : tip.type === 'info' ? 'info' : ''}">
+                <i class="fas ${tip.type === 'warning' ? 'fa-exclamation-triangle' : tip.type === 'info' ? 'fa-info-circle' : 'fa-check-circle'}"></i>
+                <span>${tip.text}</span>
+            </div>
+        `).join('');
     }
     
     // Image brightness analysis for uploaded photos

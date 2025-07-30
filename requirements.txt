@@ -10,3 +10,4 @@ scipy
 colour-science
 colorspacious
 gunicorn
+user-agents

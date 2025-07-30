@@ -1,0 +1,615 @@
+{% extends "base.html" %}
+
+{% block title %}O Boticário Foundation Matcher{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/mobile-friendly.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/camera-enhancements.css') }}">
+<style>
+    /* Override some desktop styles for mobile */
+    .upload-area, .camera-area {
+        border: none !important;
+        background: transparent !important;
+    }
+    
+    /* Hide desktop-specific elements */
+    @media (max-width: 768px) {
+        .hero-section, .py-5.bg-light, #about {
+            display: none;
+        }
+        
+        .col-lg-6 {
+            padding: 0 !important;
+        }
+        
+        .card {
+            border: none !important;
+            box-shadow: none !important;
+            background: transparent !important;
+        }
+        
+        .card-body {
+            padding: 0 !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Mobile Hero -->
+<div class="mobile-hero">
+    <div class="container">
+        <h1>Encontre Sua Base Perfeita</h1>
+        <p>Análise inteligente de cor para O Boticário</p>
+    </div>
+</div>
+
+<!-- Mobile Main Content -->
+<div class="container" style="padding-bottom: 80px;">
+    <!-- Upload Section -->
+    <div class="upload-section">
+        <div class="upload-tabs">
+            <button class="upload-tab active" id="mobileUploadTab">
+                <i class="fas fa-image me-2"></i>Foto
+            </button>
+            <button class="upload-tab" id="mobileCameraTab">
+                <i class="fas fa-camera me-2"></i>Câmera
+            </button>
+        </div>
+        
+        <!-- Upload Interface -->
+        <div id="mobileUploadInterface">
+            <div class="mobile-upload-area" id="mobileUploadArea">
+                <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                <h5>Toque para escolher foto</h5>
+                <p class="text-muted">ou arraste uma imagem aqui</p>
+                <input type="file" id="mobileFileInput" accept="image/*" style="display: none;">
+            </div>
+            
+            <!-- Image Preview -->
+            <div id="mobileImagePreview" style="display: none;">
+                <img id="mobilePreviewImg" class="img-fluid rounded mb-3" style="max-height: 300px;">
+                <button class="btn btn-primary w-100" id="mobileAnalyzeBtn">
+                    <i class="fas fa-search me-2"></i>Analisar Cor da Pele
+                </button>
+            </div>
+        </div>
+        
+        <!-- Camera Interface -->
+        <div id="mobileCameraInterface" style="display: none;">
+            <!-- Simplified Light Bar -->
+            <div class="mobile-light-bar">
+                <div class="mobile-light-header">
+                    <span class="mobile-light-title">
+                        <i class="fas fa-sun"></i>Luz
+                    </span>
+                    <span class="mobile-quality-badge" id="mobileLightBadge">--</span>
+                </div>
+                <div class="mobile-light-meter">
+                    <div class="mobile-light-fill" id="mobileLightFill" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <!-- Camera Preview -->
+            <div class="mobile-camera-container">
+                <video id="mobileCameraPreview" class="mobile-camera-preview" autoplay playsinline muted></video>
+                <div class="camera-overlay">
+                    <div class="face-guide">
+                        <div class="face-outline"></div>
+                    </div>
+                </div>
+                <canvas id="mobileCaptureCanvas" style="display: none;"></canvas>
+            </div>
+            
+            <!-- Camera Controls -->
+            <div class="mobile-camera-controls">
+                <button class="mobile-btn-secondary" id="mobileSwitchBtn" style="display: none;">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+                <button class="mobile-capture-btn" id="mobileCaptureBtn">
+                    <div class="mobile-capture-btn-inner"></div>
+                </button>
+                <button class="mobile-btn-secondary" id="mobileStopBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <!-- Captured Photo Preview -->
+            <div id="mobileCapturedPreview" style="display: none;">
+                <img id="mobileCapturedImg" class="img-fluid rounded mb-3" style="max-height: 300px;">
+                <div class="d-flex gap-2">
+                    <button class="btn btn-success flex-fill" id="mobileUsePhotoBtn">
+                        <i class="fas fa-check me-2"></i>Usar
+                    </button>
+                    <button class="btn btn-outline-secondary flex-fill" id="mobileRetakeBtn">
+                        <i class="fas fa-redo me-2"></i>Refazer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Results Section -->
+    <div id="mobileResults" class="mobile-results" style="display: none;">
+        <!-- Loading State -->
+        <div id="mobileLoading" class="mobile-loading">
+            <div class="mobile-spinner"></div>
+            <h5>Analisando sua pele...</h5>
+            <p class="text-muted">Isso pode levar alguns segundos</p>
+        </div>
+        
+        <!-- Results Display -->
+        <div id="mobileResultsContent" style="display: none;">
+            <h5 class="mb-3">Cor da Pele Detectada</h5>
+            
+            <!-- Skin Color Preview -->
+            <div class="mobile-skin-preview">
+                <img id="mobileSkinSwatch" class="mobile-color-swatch">
+                <div class="mobile-color-values">
+                    <div class="mobile-color-metric">
+                        <div class="mobile-metric-value" id="mobileLValue">--</div>
+                        <div class="mobile-metric-label">Luminosidade</div>
+                    </div>
+                    <div class="mobile-color-metric">
+                        <div class="mobile-metric-value" id="mobileAValue">--</div>
+                        <div class="mobile-metric-label">Tom</div>
+                    </div>
+                    <div class="mobile-color-metric">
+                        <div class="mobile-metric-value" id="mobileBValue">--</div>
+                        <div class="mobile-metric-label">Saturação</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Undertone Info -->
+            <div id="mobileUndertone" class="alert alert-info mb-3" style="display: none;">
+                <i class="fas fa-palette me-2"></i>
+                <strong>Subtom:</strong> <span id="mobileUndertoneText">--</span>
+            </div>
+            
+            <!-- Top Matches -->
+            <h6 class="mb-3">Melhores Combinações</h6>
+            <div id="mobileMatchList" class="mobile-match-list"></div>
+            
+            <!-- View All Button -->
+            <button class="btn btn-outline-primary w-100 mt-3" onclick="window.location.href='/results'">
+                <i class="fas fa-list me-2"></i>Ver Todas as Recomendações
+            </button>
+        </div>
+        
+        <!-- Error State -->
+        <div id="mobileError" style="display: none;">
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <span id="mobileErrorMessage">Erro ao analisar imagem</span>
+            </div>
+            <button class="btn btn-outline-primary w-100" onclick="resetMobileAnalysis()">
+                <i class="fas fa-redo me-2"></i>Tentar Novamente
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Mobile Bottom Navigation -->
+<div class="mobile-bottom-nav">
+    <a href="/" class="mobile-nav-item active">
+        <i class="fas fa-home mobile-nav-icon"></i>
+        <span class="mobile-nav-label">Início</span>
+    </a>
+    <a href="/calibration" class="mobile-nav-item">
+        <i class="fas fa-cog mobile-nav-icon"></i>
+        <span class="mobile-nav-label">Calibração</span>
+    </a>
+    <a href="#" class="mobile-nav-item" onclick="showMobileHelp(); return false;">
+        <i class="fas fa-question-circle mobile-nav-icon"></i>
+        <span class="mobile-nav-label">Ajuda</span>
+    </a>
+</div>
+
+<!-- Help Modal -->
+<div class="modal fade" id="helpModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Como usar</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <h6><i class="fas fa-camera text-primary me-2"></i>Tire uma foto</h6>
+                    <p class="text-muted small">Use luz natural para melhores resultados. Evite sombras no rosto.</p>
+                </div>
+                <div class="mb-3">
+                    <h6><i class="fas fa-search text-primary me-2"></i>Análise automática</h6>
+                    <p class="text-muted small">Nossa IA detecta sua cor de pele com precisão usando tecnologia LAB.</p>
+                </div>
+                <div class="mb-3">
+                    <h6><i class="fas fa-list text-primary me-2"></i>Recomendações</h6>
+                    <p class="text-muted small">Veja as melhores bases O Boticário para seu tom de pele.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/enhanced-light-detector.js') }}"></script>
+<script>
+// Mobile-optimized JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    // Elements
+    const uploadTab = document.getElementById('mobileUploadTab');
+    const cameraTab = document.getElementById('mobileCameraTab');
+    const uploadInterface = document.getElementById('mobileUploadInterface');
+    const cameraInterface = document.getElementById('mobileCameraInterface');
+    const uploadArea = document.getElementById('mobileUploadArea');
+    const fileInput = document.getElementById('mobileFileInput');
+    const analyzeBtn = document.getElementById('mobileAnalyzeBtn');
+    
+    // Camera elements
+    const cameraPreview = document.getElementById('mobileCameraPreview');
+    const captureCanvas = document.getElementById('mobileCaptureCanvas');
+    const captureBtn = document.getElementById('mobileCaptureBtn');
+    const stopBtn = document.getElementById('mobileStopBtn');
+    const switchBtn = document.getElementById('mobileSwitchBtn');
+    const usePhotoBtn = document.getElementById('mobileUsePhotoBtn');
+    const retakeBtn = document.getElementById('mobileRetakeBtn');
+    
+    // State
+    let currentStream = null;
+    let facingMode = 'user';
+    let capturedBlob = null;
+    let lightDetector = null;
+    let lightInterval = null;
+    
+    // Tab switching
+    uploadTab.addEventListener('click', () => {
+        uploadTab.classList.add('active');
+        cameraTab.classList.remove('active');
+        uploadInterface.style.display = 'block';
+        cameraInterface.style.display = 'none';
+        stopCamera();
+    });
+    
+    cameraTab.addEventListener('click', () => {
+        cameraTab.classList.add('active');
+        uploadTab.classList.remove('active');
+        uploadInterface.style.display = 'none';
+        cameraInterface.style.display = 'block';
+        document.getElementById('mobileCapturedPreview').style.display = 'none';
+        startCamera();
+    });
+    
+    // File upload
+    uploadArea.addEventListener('click', () => fileInput.click());
+    
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            handleFileUpload(e.target.files[0]);
+        }
+    });
+    
+    // Drag and drop
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    });
+    
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('dragover');
+    });
+    
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        if (e.dataTransfer.files.length > 0) {
+            handleFileUpload(e.dataTransfer.files[0]);
+        }
+    });
+    
+    // Camera controls
+    captureBtn.addEventListener('click', capturePhoto);
+    stopBtn.addEventListener('click', () => {
+        uploadTab.click(); // Go back to upload
+    });
+    switchBtn.addEventListener('click', switchCamera);
+    usePhotoBtn.addEventListener('click', useCapturedPhoto);
+    retakeBtn.addEventListener('click', retakePhoto);
+    analyzeBtn.addEventListener('click', analyzeImage);
+    
+    // Functions
+    function handleFileUpload(file) {
+        if (!file.type.startsWith('image/')) {
+            alert('Por favor, selecione uma imagem.');
+            return;
+        }
+        
+        // Show preview
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('mobilePreviewImg').src = e.target.result;
+            document.getElementById('mobileUploadArea').style.display = 'none';
+            document.getElementById('mobileImagePreview').style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+        
+        // Upload file
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        fetch('/upload', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                alert(data.error || 'Erro no upload');
+                resetUpload();
+            }
+        })
+        .catch(error => {
+            console.error('Upload error:', error);
+            alert('Erro no upload. Tente novamente.');
+            resetUpload();
+        });
+    }
+    
+    async function startCamera() {
+        try {
+            const constraints = {
+                video: {
+                    facingMode: facingMode,
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 }
+                }
+            };
+            
+            currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+            cameraPreview.srcObject = currentStream;
+            
+            // Initialize light detector
+            if (!lightDetector) {
+                lightDetector = new EnhancedLightDetector();
+            }
+            
+            // Start light monitoring
+            startLightMonitoring();
+            
+            // Check for multiple cameras
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const videoDevices = devices.filter(device => device.kind === 'videoinput');
+            if (videoDevices.length > 1) {
+                switchBtn.style.display = 'block';
+            }
+            
+        } catch (error) {
+            console.error('Camera error:', error);
+            alert('Não foi possível acessar a câmera');
+            uploadTab.click();
+        }
+    }
+    
+    function stopCamera() {
+        if (lightInterval) {
+            clearInterval(lightInterval);
+            lightInterval = null;
+        }
+        
+        if (currentStream) {
+            currentStream.getTracks().forEach(track => track.stop());
+            currentStream = null;
+        }
+        
+        cameraPreview.srcObject = null;
+    }
+    
+    function startLightMonitoring() {
+        if (lightInterval) clearInterval(lightInterval);
+        
+        lightInterval = setInterval(() => {
+            if (!lightDetector || !cameraPreview.videoWidth) return;
+            
+            const metrics = lightDetector.analyzeFrame(cameraPreview);
+            updateMobileLightUI(metrics);
+        }, 500);
+    }
+    
+    function updateMobileLightUI(metrics) {
+        const badge = document.getElementById('mobileLightBadge');
+        const fill = document.getElementById('mobileLightFill');
+        const captureBtn = document.getElementById('mobileCaptureBtn');
+        
+        // Update badge
+        badge.className = `mobile-quality-badge ${metrics.quality}`;
+        const qualityText = {
+            'excellent': 'Ótima',
+            'good': 'Boa',
+            'fair': 'Regular',
+            'poor': 'Fraca'
+        };
+        badge.textContent = qualityText[metrics.quality] || '--';
+        
+        // Update meter
+        const percentage = Math.min(100, (metrics.brightness / 200) * 100);
+        fill.style.width = `${percentage}%`;
+        
+        // Update capture button
+        if (metrics.quality === 'poor') {
+            captureBtn.classList.add('warning');
+        } else {
+            captureBtn.classList.remove('warning');
+        }
+    }
+    
+    async function switchCamera() {
+        facingMode = facingMode === 'user' ? 'environment' : 'user';
+        stopCamera();
+        await startCamera();
+    }
+    
+    function capturePhoto() {
+        if (!currentStream) return;
+        
+        // Check light quality
+        const quality = lightDetector?.currentMetrics.quality || 'unknown';
+        if (quality === 'poor') {
+            if (!confirm('A iluminação está fraca. Deseja continuar mesmo assim?')) {
+                return;
+            }
+        }
+        
+        // Add haptic feedback
+        if (navigator.vibrate) {
+            navigator.vibrate(50);
+        }
+        
+        // Flash effect
+        cameraPreview.style.opacity = '0';
+        setTimeout(() => cameraPreview.style.opacity = '1', 100);
+        
+        // Capture
+        const video = cameraPreview;
+        captureCanvas.width = video.videoWidth;
+        captureCanvas.height = video.videoHeight;
+        
+        const ctx = captureCanvas.getContext('2d');
+        ctx.drawImage(video, 0, 0);
+        
+        captureCanvas.toBlob(blob => {
+            capturedBlob = blob;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('mobileCapturedImg').src = e.target.result;
+                document.getElementById('mobileCameraInterface').style.display = 'none';
+                document.getElementById('mobileCapturedPreview').style.display = 'block';
+                stopCamera();
+            };
+            reader.readAsDataURL(blob);
+        }, 'image/jpeg', 0.9);
+    }
+    
+    function retakePhoto() {
+        document.getElementById('mobileCapturedPreview').style.display = 'none';
+        document.getElementById('mobileCameraInterface').style.display = 'block';
+        capturedBlob = null;
+        startCamera();
+    }
+    
+    function useCapturedPhoto() {
+        if (!capturedBlob) return;
+        
+        const formData = new FormData();
+        formData.append('file', capturedBlob, 'captured.jpg');
+        
+        // Show loading
+        showMobileLoading();
+        
+        fetch('/upload', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                analyzeImage();
+            } else {
+                showMobileError(data.error || 'Erro no upload');
+            }
+        })
+        .catch(error => {
+            console.error('Upload error:', error);
+            showMobileError('Erro no upload. Tente novamente.');
+        });
+    }
+    
+    function analyzeImage() {
+        showMobileLoading();
+        
+        fetch('/analyze', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showMobileResults(data);
+            } else {
+                showMobileError(data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Analysis error:', error);
+            showMobileError('Erro na análise. Tente novamente.');
+        });
+    }
+    
+    function showMobileLoading() {
+        document.getElementById('mobileResults').style.display = 'block';
+        document.getElementById('mobileLoading').style.display = 'flex';
+        document.getElementById('mobileResultsContent').style.display = 'none';
+        document.getElementById('mobileError').style.display = 'none';
+        
+        // Scroll to results
+        document.getElementById('mobileResults').scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    function showMobileResults(data) {
+        document.getElementById('mobileLoading').style.display = 'none';
+        document.getElementById('mobileResultsContent').style.display = 'block';
+        
+        // Update skin color
+        document.getElementById('mobileSkinSwatch').src = 'data:image/png;base64,' + data.skin_swatch_b64;
+        document.getElementById('mobileLValue').textContent = data.skin_color_lab[0].toFixed(0);
+        document.getElementById('mobileAValue').textContent = data.skin_color_lab[1].toFixed(0);
+        document.getElementById('mobileBValue').textContent = data.skin_color_lab[2].toFixed(0);
+        
+        // Update undertone
+        if (data.undertone) {
+            document.getElementById('mobileUndertoneText').textContent = data.undertone.primary;
+            document.getElementById('mobileUndertone').style.display = 'block';
+        }
+        
+        // Update matches
+        const matchList = document.getElementById('mobileMatchList');
+        matchList.innerHTML = '';
+        
+        data.matches.slice(0, 5).forEach(match => {
+            const card = document.createElement('div');
+            card.className = 'mobile-match-card';
+            card.innerHTML = `
+                <img src="data:image/png;base64,${match.swatch_b64}" class="mobile-match-swatch">
+                <div class="mobile-match-info">
+                    <div class="mobile-match-name">${match.foundation.shade}</div>
+                    <div class="mobile-match-details">${match.foundation.product_line}</div>
+                </div>
+                <div class="mobile-match-score">${match.match_score}%</div>
+            `;
+            matchList.appendChild(card);
+        });
+    }
+    
+    function showMobileError(message) {
+        document.getElementById('mobileLoading').style.display = 'none';
+        document.getElementById('mobileError').style.display = 'block';
+        document.getElementById('mobileErrorMessage').textContent = message;
+    }
+    
+    function resetUpload() {
+        document.getElementById('mobileUploadArea').style.display = 'block';
+        document.getElementById('mobileImagePreview').style.display = 'none';
+    }
+    
+    window.resetMobileAnalysis = function() {
+        document.getElementById('mobileResults').style.display = 'none';
+        resetUpload();
+    };
+    
+    window.showMobileHelp = function() {
+        const modal = new bootstrap.Modal(document.getElementById('helpModal'));
+        modal.show();
+    };
+});
+</script>
+{% endblock %}

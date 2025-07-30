@@ -20,6 +20,7 @@ import time
 from functools import wraps
 from collections import defaultdict
 import threading
+from user_agents import parse
 
 # Import calibration modules
 from calibration import ColorCalibrator, CIEColorConverter
@@ -995,8 +996,16 @@ def create_color_swatch(lab_color, size=(100, 50)):
 # Initialize the predictor
 predictor = FoundationColorPredictor()
 
+def is_mobile_device():
+    """Detect if the request is from a mobile device"""
+    user_agent_string = request.headers.get('User-Agent', '')
+    user_agent = parse(user_agent_string)
+    return user_agent.is_mobile or user_agent.is_tablet
+
 @app.route('/')
 def index():
+    if is_mobile_device():
+        return render_template('index_mobile.html')
     return render_template('index.html')
 
 @app.route('/upload', methods=['POST'])
@@ -1155,7 +1164,7 @@ def results():
     if 'analysis_results' not in session:
         return redirect('/')
     
-    return render_template('results.html', results=session['analysis_results'])
+    return render_template('results_enhanced.html', results=session['analysis_results'])
 
 # Calibration routes
 @app.route('/calibration')
